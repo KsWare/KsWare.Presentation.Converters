@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LibTests.cs" />
+    <Compile Include="StringConverterTests.cs" />
     <Compile Include="VisibilityConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
