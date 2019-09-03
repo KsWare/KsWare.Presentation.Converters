@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Markup;
@@ -13,7 +11,7 @@ using System.Windows.Markup;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("KsWare")]
 [assembly: AssemblyProduct("Presentation Framework")]
-[assembly: AssemblyCopyright("Copyright © 2002-2018 by KsWare. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2002-2019 by KsWare. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -25,7 +23,7 @@ using System.Windows.Markup;
 
 [assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 
-[assembly: XmlnsDefinition(KsWare.Presentation.Converters.AssemblyInfo.XmlNamespace, "KsWare.Presentation.ViewFramework")]
+[assembly: XmlnsDefinition(KsWare.Presentation.Converters.AssemblyInfo.XmlNamespace, "KsWare.Presentation.Converters")]
 [assembly: XmlnsPrefix(KsWare.Presentation.Converters.AssemblyInfo.XmlNamespace, "ksv")]
 
 // namespace must equal to assembly name
