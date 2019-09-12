@@ -1,0 +1,280 @@
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Windows;
+using System.Windows.Baml2006;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Resources;
+using System.Xaml;
+using System.Xml;
+using XamlReader = System.Windows.Markup.XamlReader;
+
+namespace KsWare.Presentation.Converters
+{
+	/// <summary>
+	/// Class DataTemplateConverter.
+	/// Implements the <see cref="System.Windows.Data.IValueConverter" />
+	/// </summary>
+	/// <seealso cref="System.Windows.Data.IValueConverter" />
+	public class DataTemplateConverter : IValueConverter
+	{
+		// @"pack://application:,,,/xxx;component/Resources/";
+
+
+		private const string MagicBytesBaml = "\f\0\0\0M\0S\0B\0A\0M\0L\0";
+
+		/// <summary>
+		/// Gets the default <see cref="DataTemplateConverter"/>.
+		/// </summary>
+		public static readonly DataTemplateConverter Default=new DataTemplateConverter();
+
+		/// <summary>
+		/// Gets or sets the converter parameter.
+		/// </summary>
+		/// <value>The converter parameter.</value>
+		public string ConverterParameter { get; set; }
+
+		//		public string Suffix { get; set; }
+		//
+		//		public string Prefix { get; set; } = ".xaml";
+		//
+		//		public Uri LocationUri { get; set; }
+
+
+		/// <summary>
+		/// Converts a value.
+		/// </summary>
+		/// <param name="value">The value produced by the binding source.</param>
+		/// <param name="targetType">The type of the binding target property.</param>
+		/// <param name="parameter">The converter parameter to use.</param>
+		/// <param name="culture">The culture to use in the converter.</param>
+		/// <returns>A converted value. If the method returns <see langword="null" />, the valid null value is used.</returns>
+		[SuppressMessage("ReSharper", "TooManyArguments", Justification = "Interface implementation")]
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			var locationUri = GetLocationUri(value, parameter ?? ConverterParameter);
+
+			StreamResourceInfo streamResourceInfo;
+			try { streamResourceInfo = Application.GetResourceStream(locationUri); }
+			catch (IOException) { throw; }
+
+			var buffer = new char[16];
+			var magicBytesReader = new StreamReader(streamResourceInfo.Stream, Encoding.UTF8, true, buffer.Length, true);
+			magicBytesReader.ReadBlock(buffer, 0, buffer.Length);
+			magicBytesReader.Dispose();
+			streamResourceInfo.Stream.Position = 0;
+
+
+			object resourceObject;
+			if (new string(buffer) == MagicBytesBaml)
+			{
+				resourceObject = ReadPage(streamResourceInfo.Stream);
+				
+			}
+			else
+			{
+				resourceObject = ReadResource(streamResourceInfo.Stream);
+			}
+
+			switch (resourceObject)
+			{
+				case DataTemplate dataTemplate:
+					return dataTemplate;
+				case UIElement uiElement:
+					return CreateDataTemplateFromUIElement(uiElement);
+				default:
+					return null;
+			}
+		}
+
+		/// <summary>
+		/// [Not supported]
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="culture"></param>
+		/// <returns></returns>
+		/// <exception cref="NotSupportedException">ConvertBack is not supported!</exception>
+		[SuppressMessage("ReSharper", "TooManyArguments", Justification = "Interface implementation")]
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotSupportedException($"{nameof(DataTemplateConverter)}.ConvertBack is not supported!");
+		}
+
+		private object ReadResource(Stream stream)
+		{
+			// read the stream for build action "Resource"
+			var xamlReader = new XamlReader();
+			return xamlReader.LoadAsync(stream);
+		}
+
+		private object ReadPage(Stream stream)
+		{
+			// read the stream for build action "Page"
+			using (var bamlReader = new Baml2006Reader(stream))
+			using (var writer = new XamlObjectWriter(bamlReader.SchemaContext))
+			{
+				while (bamlReader.Read()) writer.WriteNode(bamlReader);
+				return writer.Result;
+			}
+		}
+
+		private Uri GetLocationUri(object value, object parameter)
+		{
+			switch (value)
+			{
+				case string s: return GetLocationUriFromString(s, parameter);
+				default:
+				{
+					var valueAsString = value as string;
+					if (string.IsNullOrEmpty(valueAsString))
+						throw new InvalidOperationException("Resource key not specified!");
+					return GetLocationUriFromString(valueAsString, parameter);
+				}
+			}
+			
+		}
+
+		private Uri GetLocationUriFromString(string value, object parameter)
+		{
+			var stringParameter = parameter as string;
+			if (string.IsNullOrEmpty(stringParameter))
+			{
+
+			}
+			else if (stringParameter.Contains("{0}"))
+			{
+				value = string.Format(stringParameter, value);
+			}
+			else if (stringParameter.Contains("{value}"))
+			{
+				value = value.Replace("{value}",value);
+			}
+
+			if (value.Contains("{EntryAssembly}"))
+			{
+				value = value.Replace("{EntryAssembly}", Assembly.GetEntryAssembly().GetName(false).Name);
+			}
+
+
+			return new Uri(value,UriKind.Relative);
+			// pack://application:,,,/{EntryAssembly};component/Resources/
+		}
+
+		private DataTemplate CreateDataTemplateFromUIElement(UIElement content)
+		{
+			var contentXaml = SerializeToXaml(content);
+			var dataTemplateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+<DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+{contentXaml}
+</DataTemplate>";
+
+
+			var sr = new StringReader(dataTemplateXaml);
+			var xr = XmlReader.Create(sr);
+			var dataTemplate = (DataTemplate) XamlReader.Load(xr);
+			return dataTemplate;
+		}
+
+		private DataTemplate CreateErrorTemplate(string message)
+		{
+			var dataTemplate = new DataTemplate();
+			var textBlock = new FrameworkElementFactory(typeof(TextBlock));
+			textBlock.SetValue(TextBlock.TextProperty, message);
+			textBlock.SetValue(TextBlock.ForegroundProperty, Brushes.Red);
+			dataTemplate.VisualTree = textBlock;
+			return dataTemplate;
+		}
+
+		private static string SerializeToXaml(UIElement element)
+		{
+			var xaml = System.Windows.Markup.XamlWriter.Save(element);
+
+			using (var stream = new MemoryStream())
+			{
+				using (var streamWriter = new StreamWriter(stream, Encoding.UTF8, 64*1024, true))
+				{
+					streamWriter.Write(xaml);
+				}
+
+				stream.Position = 0;
+				return new StreamReader(stream).ReadToEnd();
+			}
+		}
+
+		private static string GetLocationFormatString(string locationString)
+		{
+			return locationString + (locationString.EndsWith("/") ? "" : "/") + @"{0}.xaml";
+		}
+	}
+
+	public class DataTemplateConverterMarkupExtension : MarkupExtension
+	{
+		public DataTemplateConverterMarkupExtension()
+		{
+		}
+
+		public DataTemplateConverterMarkupExtension(string path)
+		{
+			Path = path ?? "";
+		}
+
+		public string Path { get; set; }
+
+		public override object ProvideValue(IServiceProvider serviceProvider)
+		{
+			return new DataTemplateConverter();
+		}
+
+		protected string GetNormalizedPath()
+		{
+			var path = Path;
+			if (path.StartsWith("/")) path = path.Substring(1);
+			if (!path.EndsWith("/")) path += "/";
+			return path;
+		}
+	}
+
+
+	public class ExecutingAssemblyDataTemplateConverterExtension : DataTemplateConverterMarkupExtension
+	{
+		public ExecutingAssemblyDataTemplateConverterExtension(string path) : base(path)
+		{
+		}
+
+		public override object ProvideValue(IServiceProvider serviceProvider)
+		{
+			var rootObjectProvider = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
+			var root = rootObjectProvider.RootObject;
+			var assembly = root.GetType().Assembly;
+			return new DataTemplateConverter()
+			{
+				ConverterParameter= $"pack://application:,,,/{assembly};component/{GetNormalizedPath()}" + "{0}.xaml"
+			};
+		}
+	}
+
+	public class EntryAssemblyDataTemplateConverterExtension : DataTemplateConverterMarkupExtension
+	{
+		public EntryAssemblyDataTemplateConverterExtension(string path) : base(path)
+		{
+		}
+
+		public override object ProvideValue(IServiceProvider serviceProvider)
+		{
+			var assembly = Assembly.GetEntryAssembly();
+			return new DataTemplateConverter()
+			{
+				ConverterParameter= $"pack://application:,,,/{assembly};component/{GetNormalizedPath()}" + "{0}.xaml"
+			};
+		}
+	}
+
+}
