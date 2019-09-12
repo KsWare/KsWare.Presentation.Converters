@@ -126,6 +126,30 @@ namespace KsWare.Presentation.Converters
 			}
 		}
 
+        private object ReadResource(StreamResourceInfo streamResourceInfo)
+        {
+            if (streamResourceInfo.ContentType == "application/baml+xml")
+            {
+                // read stream for build action "Page"
+                using (var bamlReader = new Baml2006Reader(streamResourceInfo.Stream))
+                using (var writer = new XamlObjectWriter(bamlReader.SchemaContext))
+                {
+                    while (bamlReader.Read()) writer.WriteNode(bamlReader);
+                    return writer.Result;
+                }
+            }
+            else if (streamResourceInfo.ContentType == "application/xaml+xml")
+            {
+                // read stream for build action "Resource"
+                var xamlReader = new XamlReader();
+                return xamlReader.LoadAsync(streamResourceInfo.Stream);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
 		private Uri GetLocationUri(object value, object parameter)
 		{
 			switch (value)
@@ -251,9 +275,11 @@ namespace KsWare.Presentation.Converters
 
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
-			var rootObjectProvider = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
-			var root = rootObjectProvider.RootObject;
-			var assembly = root.GetType().Assembly;
+
+            var uriContext = serviceProvider.GetService(typeof(IUriContext)) as IUriContext;
+            var baseUri = uriContext.BaseUri;
+            var assembly = baseUri.Segments[1].Split(';')[0];
+
 			return new DataTemplateConverter()
 			{
 				ConverterParameter= $"pack://application:,,,/{assembly};component/{GetNormalizedPath()}" + "{0}.xaml"
