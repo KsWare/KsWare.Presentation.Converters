@@ -9,7 +9,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using WpfAnimatedGif;
 
 namespace KsWare.Presentation.Converters.Tests
 {

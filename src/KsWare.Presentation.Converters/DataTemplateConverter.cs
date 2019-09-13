@@ -33,8 +33,9 @@ namespace KsWare.Presentation.Converters
 		public static readonly DataTemplateConverter Default=new DataTemplateConverter();
 
 		private static object _gifPlugin;
+        private static object _svgPlugin;
 
-		static DataTemplateConverter()
+        static DataTemplateConverter()
 		{
 			_gifPlugin = Activator.CreateInstance("KsWare.Presentation.Converters.Gif", "KsWare.Presentation.Converters.Gif.DataTemplateConverterPlugin").Unwrap();
 			GifFactory = locationUri =>
@@ -44,6 +45,15 @@ namespace KsWare.Presentation.Converters
 					new object[] {locationUri});
 				return (DataTemplate) dataTemplate;
 			};
+
+            _svgPlugin = Activator.CreateInstance("KsWare.Presentation.Converters.Svg", "KsWare.Presentation.Converters.Svg.DataTemplateConverterPlugin").Unwrap();
+            SvgFactory = locationUri =>
+            {
+                var dataTemplate = _gifPlugin.GetType().InvokeMember("CreateDataTemplate",
+                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod, null, _svgPlugin,
+                    new object[] {locationUri});
+                return (DataTemplate) dataTemplate;
+            };
 		}
 
 		/// <summary>
@@ -102,14 +112,11 @@ namespace KsWare.Presentation.Converters
 				case "image/x-icon":
 					return CreateDataTemplateFromImage(locationUri);
 				case "image/gif":
-					return GifFactory(locationUri);
+					return GifFactory?.Invoke(locationUri);
 				case "image/svg+xml":
-					return CreateDataTemplateFromSvg(locationUri);
+					return SvgFactory?.Invoke(locationUri);
 				default:
-				{
 					return null;
-						break;
-				}
 			}
 		}
 
@@ -242,28 +249,7 @@ namespace KsWare.Presentation.Converters
 			var dataTemplate = (DataTemplate)XamlReader.Load(xr);
 			return dataTemplate;
 		}
-
-		private DataTemplate CreateDataTemplateFromSvg(Uri locationUri)
-		{
-			// REQUIRES: PM> Install-Package SharpVectors
-			var dataTemplateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
-			<DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:svgc=""http://sharpvectors.codeplex.com/svgc/"" >
-				<svgc:SvgViewbox Source=""{locationUri.OriginalString}"" Stretch=""Uniform"" />
-			</DataTemplate>";
-			
-			
-						var sr = new StringReader(dataTemplateXaml);
-						var xr = XmlReader.Create(sr);
-						var dataTemplate = (DataTemplate)XamlReader.Load(xr);
-						return dataTemplate;
-
-//			var dataTemplate = new DataTemplate();
-//			var textBlock = new FrameworkElementFactory(typeof(SvgViewbox));
-//			textBlock.SetValue(TextBlock.TextProperty, message);
-//			textBlock.SetValue(TextBlock.ForegroundProperty, Brushes.Red);
-//			dataTemplate.VisualTree = textBlock;
-//			return dataTemplate;
-		}
+        
 		private DataTemplate CreateErrorTemplate(string message)
 		{
 			var dataTemplate = new DataTemplate();
