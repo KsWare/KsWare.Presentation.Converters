@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -26,19 +27,34 @@ namespace KsWare.Presentation.Converters
 	{
 		// @"pack://application:,,,/xxx;component/Resources/";
 
-
-		private const string MagicBytesBaml = "\f\0\0\0M\0S\0B\0A\0M\0L\0";
-
 		/// <summary>
 		/// Gets the default <see cref="DataTemplateConverter"/>.
 		/// </summary>
 		public static readonly DataTemplateConverter Default=new DataTemplateConverter();
+
+		private static object _gifPlugin;
+
+		static DataTemplateConverter()
+		{
+			_gifPlugin = Activator.CreateInstance("KsWare.Presentation.Converters.Gif", "KsWare.Presentation.Converters.Gif.DataTemplateConverterPlugin").Unwrap();
+			GifFactory = locationUri =>
+			{
+				var dataTemplate = _gifPlugin.GetType().InvokeMember("CreateDataTemplate",
+					BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod, null, _gifPlugin,
+					new object[] {locationUri});
+				return (DataTemplate) dataTemplate;
+			};
+		}
 
 		/// <summary>
 		/// Gets or sets the converter parameter.
 		/// </summary>
 		/// <value>The converter parameter.</value>
 		public string ConverterParameter { get; set; }
+
+		public static Func<Uri, DataTemplate> GifFactory { get; set; }
+
+		public static Func<Uri, DataTemplate> SvgFactory { get; set; }
 
 		//		public string Suffix { get; set; }
 		//
@@ -62,36 +78,41 @@ namespace KsWare.Presentation.Converters
 
 			StreamResourceInfo streamResourceInfo;
 			try { streamResourceInfo = Application.GetResourceStream(locationUri); }
-			catch (IOException) { throw; }
+			catch (IOException ex) { throw; }
 
-			var buffer = new char[16];
-			var magicBytesReader = new StreamReader(streamResourceInfo.Stream, Encoding.UTF8, true, buffer.Length, true);
-			magicBytesReader.ReadBlock(buffer, 0, buffer.Length);
-			magicBytesReader.Dispose();
-			streamResourceInfo.Stream.Position = 0;
+			object resourceObject = ReadResource(streamResourceInfo);
 
-
-			object resourceObject;
-			if (new string(buffer) == MagicBytesBaml)
+			switch (streamResourceInfo.ContentType)
 			{
-				resourceObject = ReadPage(streamResourceInfo.Stream);
-				
-			}
-			else
-			{
-				resourceObject = ReadResource(streamResourceInfo.Stream);
-			}
-
-			switch (resourceObject)
-			{
-				case DataTemplate dataTemplate:
-					return dataTemplate;
-				case UIElement uiElement:
-					return CreateDataTemplateFromUIElement(uiElement);
+				case "application/baml+xml":
+				case "application/xaml+xml":
+					switch (resourceObject)
+					{
+						case DataTemplate dataTemplate:
+							return dataTemplate;
+						case UIElement uiElement:
+							return CreateDataTemplateFromUIElement(uiElement);
+						default:
+							return null;
+					}
+				case "image/bmp":
+				case "image/tiff":
+				case "image/jpeg":
+				case "image/png":
+				case "image/x-icon":
+					return CreateDataTemplateFromImage(locationUri);
+				case "image/gif":
+					return GifFactory(locationUri);
+				case "image/svg+xml":
+					return CreateDataTemplateFromSvg(locationUri);
 				default:
+				{
 					return null;
+						break;
+				}
 			}
 		}
+
 
 		/// <summary>
 		/// [Not supported]
@@ -128,26 +149,26 @@ namespace KsWare.Presentation.Converters
 
         private object ReadResource(StreamResourceInfo streamResourceInfo)
         {
-            if (streamResourceInfo.ContentType == "application/baml+xml")
-            {
-                // read stream for build action "Page"
-                using (var bamlReader = new Baml2006Reader(streamResourceInfo.Stream))
-                using (var writer = new XamlObjectWriter(bamlReader.SchemaContext))
-                {
-                    while (bamlReader.Read()) writer.WriteNode(bamlReader);
-                    return writer.Result;
-                }
-            }
-            else if (streamResourceInfo.ContentType == "application/xaml+xml")
-            {
-                // read stream for build action "Resource"
-                var xamlReader = new XamlReader();
-                return xamlReader.LoadAsync(streamResourceInfo.Stream);
-            }
-            else
-            {
-                return null;
-            }
+	        switch (streamResourceInfo.ContentType)
+	        {
+		        case "application/baml+xml":
+		        {
+			        // read stream for build action "Page"
+			        using (var bamlReader = new Baml2006Reader(streamResourceInfo.Stream))
+			        using (var writer = new XamlObjectWriter(bamlReader.SchemaContext))
+			        {
+				        while (bamlReader.Read()) writer.WriteNode(bamlReader);
+				        return writer.Result;
+			        }
+		        }
+		        case "application/xaml+xml":
+		        {
+			        // read stream for build action "Resource"
+			        var xamlReader = new XamlReader();
+			        return xamlReader.LoadAsync(streamResourceInfo.Stream);
+		        }
+		        default: return null;
+	        }
         }
 
 		private Uri GetLocationUri(object value, object parameter)
@@ -187,8 +208,9 @@ namespace KsWare.Presentation.Converters
 				value = value.Replace("{EntryAssembly}", Assembly.GetEntryAssembly().GetName(false).Name);
 			}
 
+			if (!value.StartsWith("pack:")) value = "pack://application:,,," + value;
 
-			return new Uri(value,UriKind.Relative);
+			return new Uri(value, value.StartsWith("pack:") ? UriKind.Absolute : UriKind.Relative);
 			// pack://application:,,,/{EntryAssembly};component/Resources/
 		}
 
@@ -207,6 +229,41 @@ namespace KsWare.Presentation.Converters
 			return dataTemplate;
 		}
 
+		private DataTemplate CreateDataTemplateFromImage(Uri locationUri)
+		{
+			var dataTemplateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+<DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<Image Source=""{locationUri.OriginalString}"" Stretch=""Uniform"" />
+</DataTemplate>";
+
+
+			var sr = new StringReader(dataTemplateXaml);
+			var xr = XmlReader.Create(sr);
+			var dataTemplate = (DataTemplate)XamlReader.Load(xr);
+			return dataTemplate;
+		}
+
+		private DataTemplate CreateDataTemplateFromSvg(Uri locationUri)
+		{
+			// REQUIRES: PM> Install-Package SharpVectors
+			var dataTemplateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+			<DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:svgc=""http://sharpvectors.codeplex.com/svgc/"" >
+				<svgc:SvgViewbox Source=""{locationUri.OriginalString}"" Stretch=""Uniform"" />
+			</DataTemplate>";
+			
+			
+						var sr = new StringReader(dataTemplateXaml);
+						var xr = XmlReader.Create(sr);
+						var dataTemplate = (DataTemplate)XamlReader.Load(xr);
+						return dataTemplate;
+
+//			var dataTemplate = new DataTemplate();
+//			var textBlock = new FrameworkElementFactory(typeof(SvgViewbox));
+//			textBlock.SetValue(TextBlock.TextProperty, message);
+//			textBlock.SetValue(TextBlock.ForegroundProperty, Brushes.Red);
+//			dataTemplate.VisualTree = textBlock;
+//			return dataTemplate;
+		}
 		private DataTemplate CreateErrorTemplate(string message)
 		{
 			var dataTemplate = new DataTemplate();
