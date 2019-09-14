@@ -40,7 +40,11 @@
     <AssemblyOriginatorKeyFile>Properties\KsWare.Presentation.Public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="KsWare.Presentation.Interfaces, Version=0.1.3.0, Culture=neutral, PublicKeyToken=398cf6eb36307095, processorArchitecture=MSIL">
+      <HintPath>..\packages\KsWare.Presentation.Interfaces.0.1.3\lib\net45\KsWare.Presentation.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -83,6 +87,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\KsWare.Presentation.Public.snk" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

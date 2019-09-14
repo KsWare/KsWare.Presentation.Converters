@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows;
@@ -14,6 +19,8 @@ using System.Windows.Media;
 using System.Windows.Resources;
 using System.Xaml;
 using System.Xml;
+using KsWare.Presentation.Interfaces.Plugins;
+using KsWare.Presentation.Interfaces.Plugins.DataTemplateConverter;
 using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace KsWare.Presentation.Converters
@@ -32,46 +39,54 @@ namespace KsWare.Presentation.Converters
 		/// </summary>
 		public static readonly DataTemplateConverter Default=new DataTemplateConverter();
 
-		private static object _gifPlugin;
-        private static object _svgPlugin;
+        private static Lazy<Dictionary<string, Lazy<IDataTemplateConverterPlugin, DataTemplateConverterPluginExportMetadataView>>> _lazyPlugins = InitializePlugins();
 
-        static DataTemplateConverter()
-		{
-			_gifPlugin = Activator.CreateInstance("KsWare.Presentation.Converters.Gif", "KsWare.Presentation.Converters.Gif.DataTemplateConverterPlugin").Unwrap();
-			GifFactory = locationUri =>
-			{
-				var dataTemplate = _gifPlugin.GetType().InvokeMember("CreateDataTemplate",
-					BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod, null, _gifPlugin,
-					new object[] {locationUri});
-				return (DataTemplate) dataTemplate;
-			};
+        private static Lazy<Dictionary<string, Lazy<IDataTemplateConverterPlugin, DataTemplateConverterPluginExportMetadataView>>> InitializePlugins()
+        {
+	        return new Lazy<Dictionary<string, Lazy<IDataTemplateConverterPlugin, DataTemplateConverterPluginExportMetadataView>>>(() =>
+	        {
+				var catalog = new AggregateCatalog();
+				var container = new CompositionContainer(catalog);
+				ComposeApplicationDirectory(container);
+				var exports = container.GetExports<IDataTemplateConverterPlugin, DataTemplateConverterPluginExportMetadataView>();
+				var dic = new Dictionary<string, Lazy<IDataTemplateConverterPlugin, DataTemplateConverterPluginExportMetadataView>>();
+				foreach (var export in exports)
+				{
+					foreach (var metadata in export.Metadata.Array)
+					{
+						if(!dic.ContainsKey(metadata.MimeType)) dic.Add(metadata.MimeType, export);
+					}
+				}
 
-            _svgPlugin = Activator.CreateInstance("KsWare.Presentation.Converters.Svg", "KsWare.Presentation.Converters.Svg.DataTemplateConverterPlugin").Unwrap();
-            SvgFactory = locationUri =>
-            {
-                var dataTemplate = _gifPlugin.GetType().InvokeMember("CreateDataTemplate",
-                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod, null, _svgPlugin,
-                    new object[] {locationUri});
-                return (DataTemplate) dataTemplate;
-            };
-		}
+				return dic;
+	        });
+        }
+
+        private static IDataTemplateConverterPlugin GetPlugin(string type) => _lazyPlugins.Value.TryGetValue(type, out var lazyPlugin) ? lazyPlugin.Value : null;
+
+        private static void ComposeApplicationDirectory(CompositionContainer container)
+        {
+	        var catalog = (AggregateCatalog)container.Catalog;
+	        var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+	        var dir = new DirectoryInfo(Path.GetDirectoryName(assembly.Location));
+	        foreach (var file in dir.GetFiles("*.dll").Concat(dir.GetFiles("*.exe")))
+	        {
+		        if (file.Name.StartsWith("KsWare.Presentation.Converters.") ||
+		            file.Name.Contains("DataTemplateConverterPlugin"))
+		        {
+			        assembly = Assembly.LoadFile(file.FullName);
+			        byte[] assemblykey = assembly.GetName().GetPublicKey();
+			        Debug.WriteLine($"Compose: {assembly.GetName().FullName}");
+			        catalog.Catalogs.Add(new AssemblyCatalog(assembly));
+		        }
+	        }
+        }
 
 		/// <summary>
 		/// Gets or sets the converter parameter.
 		/// </summary>
 		/// <value>The converter parameter.</value>
 		public string ConverterParameter { get; set; }
-
-		public static Func<Uri, DataTemplate> GifFactory { get; set; }
-
-		public static Func<Uri, DataTemplate> SvgFactory { get; set; }
-
-		//		public string Suffix { get; set; }
-		//
-		//		public string Prefix { get; set; } = ".xaml";
-		//
-		//		public Uri LocationUri { get; set; }
-
 
 		/// <summary>
 		/// Converts a value.
@@ -112,11 +127,9 @@ namespace KsWare.Presentation.Converters
 				case "image/x-icon":
 					return CreateDataTemplateFromImage(locationUri);
 				case "image/gif":
-					return GifFactory?.Invoke(locationUri);
 				case "image/svg+xml":
-					return SvgFactory?.Invoke(locationUri);
 				default:
-					return null;
+					return GetPlugin(streamResourceInfo.ContentType)?.CreateDataTemplate(locationUri);
 			}
 		}
 
@@ -282,25 +295,26 @@ namespace KsWare.Presentation.Converters
 		}
 	}
 
+	[MarkupExtensionReturnType(typeof(IValueConverter))]
 	public class DataTemplateConverterMarkupExtension : MarkupExtension
 	{
-		public DataTemplateConverterMarkupExtension()
+		private protected DataTemplateConverterMarkupExtension()
 		{
 		}
 
-		public DataTemplateConverterMarkupExtension(string path)
+		private protected DataTemplateConverterMarkupExtension(string path)
 		{
 			Path = path ?? "";
 		}
 
-		public string Path { get; set; }
+		public string Path { get; }
 
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
 			return new DataTemplateConverter();
 		}
 
-		protected string GetNormalizedPath()
+		private protected string GetNormalizedPath()
 		{
 			var path = Path;
 			if (path.StartsWith("/")) path = path.Substring(1);
@@ -310,7 +324,7 @@ namespace KsWare.Presentation.Converters
 	}
 
 
-	public class ExecutingAssemblyDataTemplateConverterExtension : DataTemplateConverterMarkupExtension
+	public sealed class ExecutingAssemblyDataTemplateConverterExtension : DataTemplateConverterMarkupExtension
 	{
 		public ExecutingAssemblyDataTemplateConverterExtension(string path) : base(path)
 		{
@@ -330,7 +344,7 @@ namespace KsWare.Presentation.Converters
 		}
 	}
 
-	public class EntryAssemblyDataTemplateConverterExtension : DataTemplateConverterMarkupExtension
+	public sealed class EntryAssemblyDataTemplateConverterExtension : DataTemplateConverterMarkupExtension
 	{
 		public EntryAssemblyDataTemplateConverterExtension(string path) : base(path)
 		{
