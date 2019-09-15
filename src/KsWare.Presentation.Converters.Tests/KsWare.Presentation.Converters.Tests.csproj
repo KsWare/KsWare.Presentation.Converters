@@ -43,11 +43,11 @@
     <AssemblyOriginatorKeyFile>Properties\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="KsWare.Presentation.Converters.Gif, Version=0.1.5.0, Culture=neutral, PublicKeyToken=398cf6eb36307095, processorArchitecture=MSIL">
-      <HintPath>..\packages\KsWare.Presentation.Converters.Gif.0.1.5\lib\net45\KsWare.Presentation.Converters.Gif.dll</HintPath>
+    <Reference Include="KsWare.Presentation.Converters.Gif, Version=0.1.6.0, Culture=neutral, PublicKeyToken=398cf6eb36307095, processorArchitecture=MSIL">
+      <HintPath>..\packages\KsWare.Presentation.Converters.Gif.0.1.6\lib\net45\KsWare.Presentation.Converters.Gif.dll</HintPath>
     </Reference>
-    <Reference Include="KsWare.Presentation.Converters.Svg, Version=0.1.6.0, Culture=neutral, PublicKeyToken=398cf6eb36307095, processorArchitecture=MSIL">
-      <HintPath>..\packages\KsWare.Presentation.Converters.Svg.0.1.6\lib\net45\KsWare.Presentation.Converters.Svg.dll</HintPath>
+    <Reference Include="KsWare.Presentation.Converters.Svg, Version=0.1.7.0, Culture=neutral, PublicKeyToken=398cf6eb36307095, processorArchitecture=MSIL">
+      <HintPath>..\packages\KsWare.Presentation.Converters.Svg.0.1.7\lib\net45\KsWare.Presentation.Converters.Svg.dll</HintPath>
     </Reference>
     <Reference Include="KsWare.Presentation.Interfaces, Version=0.1.3.0, Culture=neutral, PublicKeyToken=398cf6eb36307095, processorArchitecture=MSIL">
       <HintPath>..\packages\KsWare.Presentation.Interfaces.0.1.3\lib\net45\KsWare.Presentation.Interfaces.dll</HintPath>
@@ -73,7 +73,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataTemplateConverterTests.cs" />
-    <Compile Include="LibTests.cs" />
+    <Compile Include="AssemblyInfoTests.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

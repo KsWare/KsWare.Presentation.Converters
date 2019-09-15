@@ -67,6 +67,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTemplateConverter.cs" />
+    <Compile Include="DataTemplateConverterExtension.cs" />
+    <Compile Include="DataTemplateConverterHelper.cs" />
+    <Compile Include="DataTemplateConverterPluginHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
