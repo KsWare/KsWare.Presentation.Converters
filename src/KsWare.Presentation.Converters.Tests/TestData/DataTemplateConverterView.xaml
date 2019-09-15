@@ -9,18 +9,29 @@
              mc:Ignorable="d" 
              d:DesignWidth="300">
     <StackPanel>
-		<ContentControl ContentTemplate="{Binding Source=/KsWare.Presentation.Converters.Tests;component/TestData/UIElementResource.xaml, Converter={x:Static ksv:DataTemplateConverter.Default}}"/>
-		<ContentControl ContentTemplate="{Binding Source=UIElementResource, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}.xaml}"/>
-		<ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:DataTemplateConverter /ExecutingAssembly;component/TestData/}}"/>
-		<ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:DataTemplateConverter ExecutingAssembly, /TestData/}}"/>
-		<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:ExecutingAssemblyDataTemplateConverter /TestData/}}"/> -->
-		<!-- <ContentControl ContentTemplate="{Binding Source=BitmapResource.bmp, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}}" Height="20"/> -->
-		<!-- <ContentControl ContentTemplate="{Binding Source=IconResource.ico, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}}" Height="20"/> -->
-		<!-- <ContentControl ContentTemplate="{Binding Source=GifResource.gif, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}}" Height="60"/> -->
-		<!-- <ContentControl ContentTemplate="{Binding Source=SvgResource.svg, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}}" Height="60"/> -->
-		<!-- <ContentControl ContentTemplate="{Binding Source=UIElementPage, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}.xaml}"/> -->
-		<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource, Converter={ksv:ExecutingAssemblyDataTemplateConverter TestData}}"/> -->
-		<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource, Converter={ksv:EntryAssemblyDataTemplateConverter TestData}}"/> -->
+		<StackPanel x:Name="DataTemplateConverter_Default">
+		    <!-- <ContentControl ContentTemplate="{Binding Source=/KsWare.Presentation.Converters.Tests;component/TestData/UIElementResource.xaml, Converter={x:Static ksv:DataTemplateConverter.Default}}"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}.xaml}"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=BitmapResource.bmp, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}}" Height="20"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=IconResource.ico, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}}" Height="20"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=GifResource.gif, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}}" Height="60"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=SvgResource.svg, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}}" Height="60"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=UIElementPage, Converter={x:Static ksv:DataTemplateConverter.Default}, ConverterParameter=/KsWare.Presentation.Converters.Tests;component/TestData/{0}.xaml}"/> -->
+		</StackPanel>
+		<StackPanel x:Name="DataTemplateConverterExtension">
+			<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:DataTemplateConverter /ExecutingAssembly;component/TestData/}}"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:DataTemplateConverter ExecutingAssembly, /TestData/}}"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:DataTemplateConverter}}"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:DataTemplateConverter ../TestData}}"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:DataTemplateConverter .}}"/> -->
+		</StackPanel>
+		<StackPanel x:Name="ExecutingAssemblyDataTemplateConverterExtension">
+		    <!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:ExecutingAssemblyDataTemplateConverter /TestData/}}"/> -->
+			<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:ExecutingAssemblyDataTemplateConverter TestData}}"/> -->
+	    </StackPanel>
+		<StackPanel x:Name="EntryAssemblyDataTemplateConverterExtension">
+			<ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:EntryAssemblyDataTemplateConverter TestData}}"/>
+	    </StackPanel>
 		
 		<!-- <Image gif:ImageBehavior.AnimatedSource="/KsWare.Presentation.Converters.Tests;component/TestData/GifResource.gif" Stretch="Uniform" /> -->
 		

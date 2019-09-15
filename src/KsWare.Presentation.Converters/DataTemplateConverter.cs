@@ -58,7 +58,10 @@ namespace KsWare.Presentation.Converters
 			var locationUri = GetLocationUri(value, parameter ?? ConverterParameter);
 
 			if (locationUri.OriginalString.Contains("ExecutingAssembly") ||
-			    locationUri.OriginalString.Contains("EntryAssembly"))
+			    locationUri.OriginalString.Contains("EntryAssembly") ||
+				locationUri.OriginalString.StartsWith("/ERROR") ||
+				locationUri.OriginalString.StartsWith("pack://application:,,,/ERROR") 
+				)
 			{
 				//maybe design mode
 				return CreateErrorTemplate($"{value}");

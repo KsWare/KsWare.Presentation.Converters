@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Data;
 using System.Windows.Markup;
+using static KsWare.Presentation.Converters.DataTemplateConverterHelper;
 
 namespace KsWare.Presentation.Converters
 {
@@ -17,8 +19,9 @@ namespace KsWare.Presentation.Converters
 		/// <summary>
 		/// Prevents a default instance of the <see cref="DataTemplateConverterExtension"/> class from being created.
 		/// </summary>
-		private protected DataTemplateConverterExtension()
+		public DataTemplateConverterExtension()
 		{
+			ResourcePath = ".";
 		}
 
 		/// <summary>
@@ -64,26 +67,57 @@ namespace KsWare.Presentation.Converters
 		/// <inheritdoc />
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
+			var resourcePath = (ResourcePath ?? "").Trim();
 			string p = null;
-			if (ResourcePath.Contains("EntryAssembly"))
+			if (resourcePath.Length==0 || resourcePath.StartsWith("."))
+				p = EnhanceCurrentPath(serviceProvider, ResourcePath);
+			else if (resourcePath.Contains("EntryAssembly"))
 				p = EnhanceEntryAssemblyPath(ResourcePath);
-			else if (ResourcePath.Contains("ExecutingAssembly"))
-				p = EnhanceExecutingAssemblyPath(serviceProvider, ResourcePath);
+			else if (resourcePath.Contains("ExecutingAssembly"))
+				p = EnhanceExecutingAssemblyPath(serviceProvider, resourcePath);
 
 			return new DataTemplateConverter {ConverterParameter = p};
 		}
 
-		private string CombinePath(string p0, string p1)
+		private string EnhanceCurrentPath(IServiceProvider serviceProvider, string resourcePath)
 		{
-			var sep = p0.EndsWith("/") || p1.StartsWith("/") ? "" : "/";
-			return p0 + sep + p1;
+			if (serviceProvider == null) return CombinePath("ERROR-ExecutingAssembly-NotAvailable;component", resourcePath);
+			var uriContext = serviceProvider.GetService(typeof(IUriContext)) as IUriContext;
+			if (uriContext == null) return CombinePath("ERROR-ExecutingAssembly-NotAvailable;component", resourcePath);
+			var baseUri = uriContext.BaseUri; 
+
+			if (resourcePath.StartsWith(".."))
+			{
+				var rp = resourcePath;
+				var sc = baseUri.Segments.Length - 1;
+				var segments = resourcePath.Split('/');
+				var backCount = segments.TakeWhile(s => s == "..").Count();
+				sc -= backCount;
+				if (sc < 2)
+				{
+					return CombinePath("/"+baseUri.Segments[1], resourcePath); // ERROR: return invalid url!
+				}
+				rp = string.Join("/", segments.Skip(backCount));
+				var folder = string.Join("", baseUri.Segments.Take(sc));
+				return CombinePath(folder, rp);
+			}
+			else if(resourcePath.StartsWith("."))
+			{
+				var folder = string.Join("", baseUri.Segments.Take(baseUri.Segments.Length - 1));
+				return CombinePath(folder, resourcePath.Substring(1));
+			}
+			else
+			{
+				var folder = string.Join("", baseUri.Segments.Take(baseUri.Segments.Length - 1));
+				return CombinePath(folder, resourcePath);
+			}
 		}
 
 		private string EnhanceExecutingAssemblyPath(IServiceProvider serviceProvider, string resourcePath)
 		{
-			if (serviceProvider == null)  return resourcePath;
+			if (serviceProvider == null) return resourcePath.Replace("ExecutingAssembly", "ERROR-ExecutingAssembly-NotAvailable");
 			var uriContext = serviceProvider.GetService(typeof(IUriContext)) as IUriContext;
-			if (uriContext == null) return resourcePath; 
+			if (uriContext == null) return resourcePath.Replace("ExecutingAssembly", "ERROR-ExecutingAssembly-NotAvailable");
 			var baseUri = uriContext.BaseUri;
 			var assembly = baseUri.Segments[1].Split(';')[0];
 			return resourcePath.Replace("ExecutingAssembly", assembly);
@@ -92,10 +126,10 @@ namespace KsWare.Presentation.Converters
 		private string EnhanceEntryAssemblyPath(string resourcePath)
 		{
 			var assembly = Assembly.GetEntryAssembly()?.GetName(true).Name;
-			if (assembly == null)
+			if (string.IsNullOrEmpty(assembly) || assembly == "XDesProc")
 			{
 				// TODO e.g. at test or design time
-				assembly = Assembly.GetExecutingAssembly()?.GetName(true).Name;
+				assembly = "ERROR-EntryAssembly-NotAvailable";
 			}
 
 			return resourcePath.Replace("EntryAssembly", assembly);
@@ -124,7 +158,7 @@ namespace KsWare.Presentation.Converters
 
 		private static string EnhancePath(string resourcePath)
 		{
-			return "ExecutingAssembly;component" + (resourcePath.StartsWith("/") ? "" : "/") + resourcePath;
+			return CombinePath("ExecutingAssembly;component", resourcePath);
 		}
 	}
 
@@ -150,7 +184,7 @@ namespace KsWare.Presentation.Converters
 
 		private static string EnhancePath(string resourcePath)
 		{
-			return "EntryAssembly;component" + (resourcePath.StartsWith("/") ? "" : "/") + resourcePath;
+			return CombinePath("EntryAssembly;component", resourcePath);
 		}
 	}
 }
