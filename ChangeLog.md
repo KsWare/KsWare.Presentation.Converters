@@ -1,6 +1,9 @@
 # Release Notes
 KsWare.Presentation.Converters
 
+#### 2019-12-23 (v0.1.52)
+- Multiframework Support (.Net 4.5+ and Core 3.x)
+
 #### 2019-09-15 (v0.1.43)
 - NEW DataTemplateConverter
   - plugin support (+plugins for animated GIF, SVG)
