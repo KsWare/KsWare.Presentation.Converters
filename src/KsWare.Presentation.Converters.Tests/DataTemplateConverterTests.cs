@@ -1,14 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using System.Windows;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace KsWare.Presentation.Converters.Tests
 {
