@@ -30,7 +30,7 @@
 			<!-- <ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:ExecutingAssemblyDataTemplateConverter TestData}}"/> -->
 	    </StackPanel>
 		<StackPanel x:Name="EntryAssemblyDataTemplateConverterExtension">
-			<ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:EntryAssemblyDataTemplateConverter TestData}}"/>
+			<ContentControl ContentTemplate="{Binding Source=UIElementResource.xaml, Converter={ksv:EntryAssemblyTemplateConverter TestData}}"/>
 	    </StackPanel>
 		
 		<!-- <Image gif:ImageBehavior.AnimatedSource="/KsWare.Presentation.Converters.Tests;component/TestData/GifResource.gif" Stretch="Uniform" /> -->

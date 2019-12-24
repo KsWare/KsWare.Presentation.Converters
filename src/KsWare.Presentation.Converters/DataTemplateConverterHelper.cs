@@ -86,18 +86,31 @@ namespace KsWare.Presentation.Converters
 		public static DataTemplate CreateDataTemplateFromUIElement(UIElement content)
 		{
 			var contentXaml = SerializeToXaml(content);
-			var dataTemplateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+			var templateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
 {contentXaml}
 </DataTemplate>";
 
 
-			var sr = new StringReader(dataTemplateXaml);
+			var sr = new StringReader(templateXaml);
 			var xr = XmlReader.Create(sr);
 			var dataTemplate = (DataTemplate)XamlReader.Load(xr);
 			return dataTemplate;
 		}
+		public static ControlTemplate CreateControlTemplateFromUIElement(UIElement content)
+		{
+			var contentXaml = SerializeToXaml(content);
+			var templateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+<ControlTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+{contentXaml}
+</ControlTemplate>";
 
+
+			var sr = new StringReader(templateXaml);
+			var xr = XmlReader.Create(sr);
+			var controlTemplate = (ControlTemplate)XamlReader.Load(xr);
+			return controlTemplate;
+		}
 		public static DataTemplate CreateDataTemplateFromImage(Uri locationUri)
 		{
 			var dataTemplateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
@@ -111,7 +124,18 @@ namespace KsWare.Presentation.Converters
 			var dataTemplate = (DataTemplate)XamlReader.Load(xr);
 			return dataTemplate;
 		}
+		public static ControlTemplate CreateControlTemplateFromImage(Uri locationUri) {
+			var templateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+<ControlTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<Image Source=""{locationUri.OriginalString}"" Stretch=""Uniform"" />
+</ControlTemplate>";
 
+
+			var sr = new StringReader(templateXaml);
+			var xr = XmlReader.Create(sr);
+			var controlTemplate = (ControlTemplate)XamlReader.Load(xr);
+			return controlTemplate;
+		}
 		public static DataTemplate CreateErrorTemplate(string message)
 		{
 			var dataTemplate = new DataTemplate();

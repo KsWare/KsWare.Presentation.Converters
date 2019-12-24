@@ -9,37 +9,37 @@ using static KsWare.Presentation.Converters.DataTemplateConverterHelper;
 namespace KsWare.Presentation.Converters
 {
 	/// <summary>
-	/// Class DataTemplateConverterExtension.
+	/// Class TemplateConverterExtension.
 	/// Implements the <see cref="System.Windows.Markup.MarkupExtension" />
 	/// </summary>
 	/// <seealso cref="System.Windows.Markup.MarkupExtension" />
 	[MarkupExtensionReturnType(typeof(IValueConverter))]
-	public class DataTemplateConverterExtension : MarkupExtension
+	public class TemplateConverterExtension : MarkupExtension
 	{
 		/// <summary>
-		/// Prevents a default instance of the <see cref="DataTemplateConverterExtension"/> class from being created.
+		/// Prevents a default instance of the <see cref="TemplateConverterExtension"/> class from being created.
 		/// </summary>
-		public DataTemplateConverterExtension()
+		public TemplateConverterExtension()
 		{
 			ResourcePath = ".";
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DataTemplateConverterExtension"/> class.
+		/// Initializes a new instance of the <see cref="TemplateConverterExtension"/> class.
 		/// </summary>
 		/// <param name="resourcePath">The absolute or relative path to the resource. (relative to the root of assembly)</param>
 		[SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "public API")]
-		public DataTemplateConverterExtension(string resourcePath)
+		public TemplateConverterExtension(string resourcePath)
 		{
 			ResourcePath = resourcePath ?? "";
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DataTemplateConverterExtension"/> class.
+		/// Initializes a new instance of the <see cref="TemplateConverterExtension"/> class.
 		/// </summary>
 		/// <param name="assembly">The assembly name or one of the placeholders: "<c>EntryAssembly</c>", "<c>ExecutingAssembly</c>"</param>
 		/// <param name="resourcePath">The relative path to the resource. (relative to the root of assembly)</param>
-		public DataTemplateConverterExtension(string assembly, string resourcePath)
+		public TemplateConverterExtension(string assembly, string resourcePath)
 		{
 			ResourcePath = CombinePath(assembly + ";component", resourcePath);
 		}
@@ -138,21 +138,21 @@ namespace KsWare.Presentation.Converters
 
 
 	/// <summary>
-	/// Class ExecutingAssemblyDataTemplateConverterExtension. This class cannot be inherited.
-	/// Implements the <see cref="DataTemplateConverterExtension" />
+	/// Class ExecutingAssemblyTemplateConverterExtension. This class cannot be inherited.
+	/// Implements the <see cref="TemplateConverterExtension" />
 	/// </summary>
-	/// <seealso cref="DataTemplateConverterExtension" />
-	public sealed class ExecutingAssemblyDataTemplateConverterExtension : DataTemplateConverterExtension
+	/// <seealso cref="TemplateConverterExtension" />
+	public sealed class ExecutingAssemblyTemplateConverterExtension : TemplateConverterExtension
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ExecutingAssemblyDataTemplateConverterExtension"/> class.
+		/// Initializes a new instance of the <see cref="ExecutingAssemblyTemplateConverterExtension"/> class.
 		/// </summary>
 		/// <param name="resourcePath">The relative path to the resource.</param>
 		/// <example>
 		/// ResourcePath : "<c>Resources</c>" results in <br/>
 		/// ConverterParameter "<c>pack://application:,,,/Name-Of-Executing-Assembly;component/Resources/{0}</c>"
 		/// </example>
-		public ExecutingAssemblyDataTemplateConverterExtension(string resourcePath) : base(EnhancePath(resourcePath))
+		public ExecutingAssemblyTemplateConverterExtension(string resourcePath) : base(EnhancePath(resourcePath))
 		{
 		}
 
@@ -163,22 +163,22 @@ namespace KsWare.Presentation.Converters
 	}
 
 	/// <summary>
-	/// Class EntryAssemblyDataTemplateConverterExtension. This class cannot be inherited.
-	/// Implements the <see cref="DataTemplateConverterExtension" />
+	/// Class EntryAssemblyTemplateConverterExtension. This class cannot be inherited.
+	/// Implements the <see cref="TemplateConverterExtension" />
 	/// </summary>
-	/// <seealso cref="DataTemplateConverterExtension" />
-	public sealed class EntryAssemblyDataTemplateConverterExtension : DataTemplateConverterExtension
+	/// <seealso cref="TemplateConverterExtension" />
+	public sealed class EntryAssemblyTemplateConverterExtension : TemplateConverterExtension
 	{
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EntryAssemblyDataTemplateConverterExtension"/> class.
+		/// Initializes a new instance of the <see cref="EntryAssemblyTemplateConverterExtension"/> class.
 		/// </summary>
 		/// <param name="resourcePath">The relative path to the resource.</param>
 		/// <example>
 		/// ResourcePath : "<c>Resources</c>" results in <br/>
 		/// ConverterParameter "<c>pack://application:,,,/Name-Of-Entry-Assembly;component/Resources/{0}</c>"
 		/// </example>
-		public EntryAssemblyDataTemplateConverterExtension(string resourcePath) : base(EnhancePath(resourcePath))
+		public EntryAssemblyTemplateConverterExtension(string resourcePath) : base(EnhancePath(resourcePath))
 		{
 		}
 
