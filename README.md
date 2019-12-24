@@ -1,6 +1,8 @@
 # KsWare.Presentation.Converters
 Converters for KsWare Presentation Framework
 
+Supports .Net 4.5+ and Core 3.x
+
 | |Master|Develop|Kux|
 |---|---|---|---|
 |Build|[![Build status](https://ci.appveyor.com/api/projects/status/f6egmwg7elfxua7y/branch/master?svg=true)](https://ci.appveyor.com/project/KsWare/ksware-presentation-converters/branch/master)|[![Build status](https://ci.appveyor.com/api/projects/status/f6egmwg7elfxua7y/branch/develop?svg=true)](https://ci.appveyor.com/project/KsWare/ksware-presentation-converters/branch/develop)|[![Build status](https://ci.appveyor.com/api/projects/status/f6egmwg7elfxua7y/branch/develop?svg=true)](https://ci.appveyor.com/project/KsWare/ksware-presentation-converters/branch/features/kux)|
