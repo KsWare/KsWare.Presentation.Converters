@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Baml2006;
@@ -13,7 +12,7 @@ using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace KsWare.Presentation.Converters
 {
-	internal static class DataTemplateConverterHelper
+	internal static class TemplateConverterHelper
 	{
 		public static object ReadResource(StreamResourceInfo streamResourceInfo)
 		{

@@ -13,15 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace KsWare.Presentation.Converters.Tests.TestData
-{
+namespace KsWare.Presentation.Converters.TestApp {
 	/// <summary>
-	/// Interaction logic for DataTemplateConverterView.xaml
+	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class DataTemplateConverterView : UserControl
-	{
-		public DataTemplateConverterView()
-		{
+	public partial class MainWindow : Window {
+		public MainWindow() {
 			InitializeComponent();
 		}
 	}

@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Data;
 
 namespace KsWare.Presentation.Converters {
 
 	/// <summary>Class VisibilityConverter.
 	/// Implements the <see cref="System.Windows.Data.IValueConverter"/></summary>
 	/// <seealso cref="System.Windows.Data.IValueConverter" />
-	public class VisibilityConverter:IValueConverter {
+	public class VisibilityConverter:ValueConverterBase {
 
 		private static readonly DependencyObject DependencyObject=new DependencyObject();
 
@@ -36,7 +35,7 @@ namespace KsWare.Presentation.Converters {
 		/// <value>The value</value>
 		/// <example>Usage: <code>&lt;Grid Visibility="{Binding MyListProperty.Count, Converter={x:Static vfw:VisibilityConverter.NullOr0VisibleElseHidden}}"&gt;</code></example>
 		public static VisibilityConverter NullOr0VisibleElseHidden { get; private set; }
-		public static VisibilityConverter NullOr0VisibleElseCollabsed { get; private set; }
+		public static VisibilityConverter NullOr0VisibleElseCollapsed { get; private set; }
 		public static VisibilityConverter NullOr0CollapsedElseVisible { get; private set; }
 		public static VisibilityConverter NullOr0HiddenElseVisible { get; private set; }
 
@@ -60,47 +59,83 @@ namespace KsWare.Presentation.Converters {
 		private const Value IsNotEqual = Value.IsNotEqual;
 		private const Value IsNullOr0  = Value.IsNullOr0;
 
-		private static Dictionary<Expression, VisibilityConverter> _converters;
+		private static readonly Dictionary<Expression, VisibilityConverter> Converters;
 
 		static VisibilityConverter() {
 
-			_converters=new Dictionary<Expression, VisibilityConverter>();
+			Converters=new Dictionary<Expression, VisibilityConverter>();
 
-			_converters.Add(Expression.TrueVisibleElseCollapsed       , TrueVisibleElseCollapsed    = new VisibilityConverter(IsTrue     ,Visible  ,Collapsed));
-			_converters.Add(Expression.TrueVisibleElseHidden          , TrueVisibleElseHidden       = new VisibilityConverter(IsTrue     ,Visible  ,Hidden   ));
-			_converters.Add(Expression.TrueHiddenElseVisible          , TrueHiddenElseVisible       = new VisibilityConverter(IsTrue     ,Hidden   ,Visible  ));
-			_converters.Add(Expression.TrueCollapsedElseVisible       , TrueCollapsedElseVisible    = new VisibilityConverter(IsTrue     ,Collapsed,Visible  ));
+			Converters.Add(Expression.TrueVisibleElseCollapsed       , TrueVisibleElseCollapsed    = new VisibilityConverter(IsTrue     ,Visible  ,Collapsed));
+			Converters.Add(Expression.TrueVisibleElseHidden          , TrueVisibleElseHidden       = new VisibilityConverter(IsTrue     ,Visible  ,Hidden   ));
+			Converters.Add(Expression.TrueHiddenElseVisible          , TrueHiddenElseVisible       = new VisibilityConverter(IsTrue     ,Hidden   ,Visible  ));
+			Converters.Add(Expression.TrueCollapsedElseVisible       , TrueCollapsedElseVisible    = new VisibilityConverter(IsTrue     ,Collapsed,Visible  ));
 
-			_converters.Add(Expression.FalseVisibleElseCollapsed      , FalseVisibleElseCollapsed    = new VisibilityConverter(IsFalse   ,Visible  ,Collapsed));
-			_converters.Add(Expression.FalseVisibleElseHidden         , FalseVisibleElseHidden       = new VisibilityConverter(IsFalse   ,Visible  ,Hidden   ));
-			_converters.Add(Expression.FalseCollapsedElseVisible      , FalseCollapsedElseVisible    = new VisibilityConverter(IsFalse   ,Collapsed,Visible  ));
-			_converters.Add(Expression.FalseHiddenElseVisible         , FalseHiddenElseVisible       = new VisibilityConverter(IsFalse   ,Hidden   ,Visible  ));
+			Converters.Add(Expression.FalseVisibleElseCollapsed      , FalseVisibleElseCollapsed    = new VisibilityConverter(IsFalse   ,Visible  ,Collapsed));
+			Converters.Add(Expression.FalseVisibleElseHidden         , FalseVisibleElseHidden       = new VisibilityConverter(IsFalse   ,Visible  ,Hidden   ));
+			Converters.Add(Expression.FalseCollapsedElseVisible      , FalseCollapsedElseVisible    = new VisibilityConverter(IsFalse   ,Collapsed,Visible  ));
+			Converters.Add(Expression.FalseHiddenElseVisible         , FalseHiddenElseVisible       = new VisibilityConverter(IsFalse   ,Hidden   ,Visible  ));
 
-			_converters.Add(Expression.NullVisibleElseHidden          , NullVisibleElseHidden        = new VisibilityConverter(IsNull    ,Visible  ,Hidden   ));
-			_converters.Add(Expression.NullVisibleElseCollapsed       , NullVisibleElseCollapsed     = new VisibilityConverter(IsNull    ,Visible  ,Collapsed));
-			_converters.Add(Expression.NullCollapsedElseVisible       , NullCollapsedElseVisible     = new VisibilityConverter(IsNull    ,Collapsed,Visible  ));
-			_converters.Add(Expression.NullHiddenElseVisible          , NullHiddenElseVisible        = new VisibilityConverter(IsNull    ,Hidden   ,Visible  ));
+			Converters.Add(Expression.NullVisibleElseHidden          , NullVisibleElseHidden        = new VisibilityConverter(IsNull    ,Visible  ,Hidden   ));
+			Converters.Add(Expression.NullVisibleElseCollapsed       , NullVisibleElseCollapsed     = new VisibilityConverter(IsNull    ,Visible  ,Collapsed));
+			Converters.Add(Expression.NullCollapsedElseVisible       , NullCollapsedElseVisible     = new VisibilityConverter(IsNull    ,Collapsed,Visible  ));
+			Converters.Add(Expression.NullHiddenElseVisible          , NullHiddenElseVisible        = new VisibilityConverter(IsNull    ,Hidden   ,Visible  ));
 
-			_converters.Add(Expression.NullOr0VisibleElseHidden       , NullOr0VisibleElseHidden     = new VisibilityConverter(IsNullOr0 ,Visible  ,Hidden   ));
-			_converters.Add(Expression.NullOr0VisibleElseCollapsed    , NullOr0VisibleElseCollabsed  = new VisibilityConverter(IsNullOr0 ,Visible  ,Collapsed));
-			_converters.Add(Expression.NullOr0CollapsedElseVisible    , NullOr0CollapsedElseVisible  = new VisibilityConverter(IsNullOr0 ,Collapsed,Visible  ));
-			_converters.Add(Expression.NullOr0HiddenElseVisible       , NullOr0HiddenElseVisible     = new VisibilityConverter(IsNullOr0 ,Hidden   ,Visible  ));
+			Converters.Add(Expression.NullOr0VisibleElseHidden       , NullOr0VisibleElseHidden     = new VisibilityConverter(IsNullOr0 ,Visible  ,Hidden   ));
+			Converters.Add(Expression.NullOr0VisibleElseCollapsed    , NullOr0VisibleElseCollapsed  = new VisibilityConverter(IsNullOr0 ,Visible  ,Collapsed));
+			Converters.Add(Expression.NullOr0CollapsedElseVisible    , NullOr0CollapsedElseVisible  = new VisibilityConverter(IsNullOr0 ,Collapsed,Visible  ));
+			Converters.Add(Expression.NullOr0HiddenElseVisible       , NullOr0HiddenElseVisible     = new VisibilityConverter(IsNullOr0 ,Hidden   ,Visible  ));
 						    
-			_converters.Add(Expression.EqualVisibleElseCollapsed      , EqualVisibleElseCollapsed    = new VisibilityConverter(IsEqual   ,Visible  ,Collapsed));
-			_converters.Add(Expression.EqualVisibleElseHidden         , EqualVisibleElseHidden       = new VisibilityConverter(IsEqual   ,Visible  ,Hidden   ));
-			_converters.Add(Expression.EqualCollapsedElseVisible      , EqualCollapsedElseVisible    = new VisibilityConverter(IsEqual   ,Collapsed,Visible  ));
-			_converters.Add(Expression.EqualHiddenElseVisible         , EqualHiddenElseVisible       = new VisibilityConverter(IsEqual   ,Hidden   ,Visible  ));
+			Converters.Add(Expression.EqualVisibleElseCollapsed      , EqualVisibleElseCollapsed    = new VisibilityConverter(IsEqual   ,Visible  ,Collapsed));
+			Converters.Add(Expression.EqualVisibleElseHidden         , EqualVisibleElseHidden       = new VisibilityConverter(IsEqual   ,Visible  ,Hidden   ));
+			Converters.Add(Expression.EqualCollapsedElseVisible      , EqualCollapsedElseVisible    = new VisibilityConverter(IsEqual   ,Collapsed,Visible  ));
+			Converters.Add(Expression.EqualHiddenElseVisible         , EqualHiddenElseVisible       = new VisibilityConverter(IsEqual   ,Hidden   ,Visible  ));
 
-			_converters.Add(Expression.NotEqualVisibleElseCollapsed   , NotEqualVisibleElseCollapsed = new VisibilityConverter(IsNotEqual,Visible  ,Collapsed));
-			_converters.Add(Expression.NotEqualVisibleElseHidden      , NotEqualVisibleElseHidden    = new VisibilityConverter(IsNotEqual,Visible  ,Hidden   ));
-			_converters.Add(Expression.NotEqualCollapsedElseVisible   , NotEqualCollapsedElseVisible = new VisibilityConverter(IsNotEqual,Collapsed,Visible  ));
-			_converters.Add(Expression.NotEqualHiddenElseVisible      , NotEqualHiddenElseVisible    = new VisibilityConverter(IsNotEqual,Hidden   ,Visible  ));
+			Converters.Add(Expression.NotEqualVisibleElseCollapsed   , NotEqualVisibleElseCollapsed = new VisibilityConverter(IsNotEqual,Visible  ,Collapsed));
+			Converters.Add(Expression.NotEqualVisibleElseHidden      , NotEqualVisibleElseHidden    = new VisibilityConverter(IsNotEqual,Visible  ,Hidden   ));
+			Converters.Add(Expression.NotEqualCollapsedElseVisible   , NotEqualCollapsedElseVisible = new VisibilityConverter(IsNotEqual,Collapsed,Visible  ));
+			Converters.Add(Expression.NotEqualHiddenElseVisible      , NotEqualHiddenElseVisible    = new VisibilityConverter(IsNotEqual,Hidden   ,Visible  ));
 
 		}
 
 
 		public VisibilityConverter() {
 			Designer  = DependencyProperty.UnsetValue;
+		}
+
+		public VisibilityConverter(Expression expression) {
+			switch (expression) {
+				case Expression.TrueVisibleElseCollapsed: Condition = IsTrue; True = Visible; Else = Collapsed;break;
+				case Expression.TrueVisibleElseHidden: Condition = IsTrue; True = Visible; Else = Hidden; break;
+				case Expression.TrueHiddenElseVisible: Condition = IsTrue; True = Hidden; Else = Visible; break;
+				case Expression.TrueCollapsedElseVisible: Condition = IsTrue; True = Collapsed; Else = Visible; break;
+
+				case Expression.FalseVisibleElseCollapsed: Condition = IsFalse; True = Visible; Else = Collapsed; break;
+				case Expression.FalseVisibleElseHidden: Condition = IsFalse; True = Visible; Else = Hidden; break;
+				case Expression.FalseCollapsedElseVisible: Condition = IsFalse; True = Collapsed; Else = Visible; break;
+				case Expression.FalseHiddenElseVisible: Condition = IsFalse; True = Hidden; Else = Visible; break;
+
+				case Expression.NullVisibleElseHidden: Condition = IsNull; True = Visible; Else = Hidden; break;
+				case Expression.NullVisibleElseCollapsed: Condition = IsNull; True = Visible; Else = Collapsed; break;
+				case Expression.NullCollapsedElseVisible: Condition = IsNull; True = Collapsed; Else = Visible; break;
+				case Expression.NullHiddenElseVisible: Condition = IsNull; True = Hidden; Else = Visible; break;
+
+				case Expression.NullOr0VisibleElseHidden: Condition = IsNullOr0; True = Visible; Else = Hidden; break;
+				case Expression.NullOr0VisibleElseCollapsed: Condition = IsNullOr0; True = Visible; Else = Collapsed; break;
+				case Expression.NullOr0CollapsedElseVisible: Condition = IsNullOr0; True = Collapsed; Else = Visible; break;
+				case Expression.NullOr0HiddenElseVisible: Condition = IsNullOr0; True = Hidden; Else = Visible; break;
+
+				case Expression.EqualVisibleElseCollapsed: Condition = IsEqual; True = Visible; Else = Collapsed; break;
+				case Expression.EqualVisibleElseHidden: Condition = IsEqual; True = Visible; Else = Hidden; break;
+				case Expression.EqualCollapsedElseVisible: Condition = IsEqual; True = Collapsed; Else = Visible; break;
+				case Expression.EqualHiddenElseVisible: Condition = IsEqual; True = Hidden; Else = Visible; break;
+
+				case Expression.NotEqualVisibleElseCollapsed: Condition = IsNotEqual; True = Visible; Else = Collapsed; break;
+				case Expression.NotEqualVisibleElseHidden: Condition = IsNotEqual; True = Visible; Else = Hidden; break;
+				case Expression.NotEqualCollapsedElseVisible: Condition = IsNotEqual; True = Collapsed; Else = Visible; break;
+				case Expression.NotEqualHiddenElseVisible: Condition = IsNotEqual; True = Hidden; Else = Visible; break;
+
+				default: throw new NotImplementedException("NotImplemented {CEEC7463-252A-4D36-A1D4-54243AF2F799}");
+			}
 		}
 
 		private VisibilityConverter(Value condition) {
@@ -131,7 +166,7 @@ namespace KsWare.Presentation.Converters {
 
 		private object Designer { get; set; }
 
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+		public override object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
 
 			var p=parameter as VisibilityConverterParameter;
 			var v=parameter as Visibility?;
@@ -213,11 +248,9 @@ namespace KsWare.Presentation.Converters {
 			}
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) { throw new NotImplementedException("Not implemented {1F3CC807-B0EE-4B3C-98C6-1483B7C176FF}"); }
-
 		public static VisibilityConverter Get(Expression expression) {
 			VisibilityConverter converter;
-			if (!_converters.TryGetValue(expression, out converter)) {
+			if (!Converters.TryGetValue(expression, out converter)) {
 				throw new NotImplementedException("Converter not found! ErrorID:{1D7CC6E3-2466-47F2-B2C2-BEBA23C636CA}");
 			}
 			return converter;

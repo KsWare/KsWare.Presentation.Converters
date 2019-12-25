@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Data;
 using System.Windows.Markup;
-using static KsWare.Presentation.Converters.DataTemplateConverterHelper;
+using static KsWare.Presentation.Converters.TemplateConverterHelper;
 
 namespace KsWare.Presentation.Converters
 {
@@ -76,7 +76,7 @@ namespace KsWare.Presentation.Converters
 			else if (resourcePath.Contains("ExecutingAssembly"))
 				p = EnhanceExecutingAssemblyPath(serviceProvider, resourcePath);
 
-			return new DataTemplateConverter {ConverterParameter = p};
+			return new TemplateConverter {ConverterParameter = p};
 		}
 
 		private string EnhanceCurrentPath(IServiceProvider serviceProvider, string resourcePath)

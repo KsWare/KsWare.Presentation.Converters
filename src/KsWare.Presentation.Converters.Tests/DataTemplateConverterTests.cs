@@ -16,7 +16,7 @@ namespace KsWare.Presentation.Converters.Tests
 		[TestCase("IconResource.ico")]
 		public void Test(string key)
 		{
-			var sut = new DataTemplateConverter()
+			var sut = new TemplateConverter()
 			{
 				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}"
 			};

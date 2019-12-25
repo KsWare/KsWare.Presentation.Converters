@@ -1,0 +1,28 @@
+﻿<UserControl 
+	x:Class="KsWare.Presentation.Converters.TestApp.StringJoinConverterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ksv="http://ksware.de/Presentation/ViewFramework"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+	<FrameworkElement.Resources>
+		<system:Double x:Key="Double">45.33333</system:Double>
+	</FrameworkElement.Resources>
+    
+	<Grid>
+		<TextBlock>
+            <TextBlock.Text>
+	            <MultiBinding Converter="{ksv:StringJoinConverter Separator='-'}">
+					<Binding Source="{StaticResource Double}" Converter="{ksv:StringConverter F1}" />
+					<Binding Source="ProTwo" />
+					<Binding Source="34.45" />
+					<Binding Source="ProFour" />
+	            </MultiBinding>
+			</TextBlock.Text>
+		</TextBlock>   
+
+    </Grid>
+</UserControl>

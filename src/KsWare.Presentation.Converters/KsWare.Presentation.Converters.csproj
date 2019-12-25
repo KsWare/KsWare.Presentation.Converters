@@ -48,6 +48,17 @@
     <NoWarn>1701;1702;CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="TODO\EnumImageConverter.cs" />
+    <Compile Remove="TODO\EnumResourceConverter.cs" />
+    <Compile Remove="TODO\NumericVisibilityConverter.cs" />
+    <Compile Remove="TODO\ResourceDictionaryLockupConverter.cs" />
+    <Compile Remove="TODO\UIElementConverter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="KsWare.Presentation.Converters.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
     <PackageReference Include="KsWare.Presentation.Interfaces" Version="0.1.35" />
   </ItemGroup>
   <ItemGroup>
@@ -55,5 +66,10 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="TODO\EnumImageConverter.cs" />
+    <None Include="TODO\EnumResourceConverter.cs" />
+    <None Include="TODO\NumericVisibilityConverter.cs" />
+    <None Include="TODO\ResourceDictionaryLockupConverter.cs" />
+    <None Include="TODO\UIElementConverter.cs" />
   </ItemGroup>
 </Project>

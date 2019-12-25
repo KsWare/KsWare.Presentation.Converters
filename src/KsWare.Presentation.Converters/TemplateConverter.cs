@@ -6,17 +6,17 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Resources;
-using static KsWare.Presentation.Converters.DataTemplateConverterHelper;
+using static KsWare.Presentation.Converters.TemplateConverterHelper;
 
 namespace KsWare.Presentation.Converters {
 
 	/// <summary>
-	/// Class DataTemplateConverter.
+	/// Class TemplateConverter.
 	/// Implements the <see cref="System.Windows.Data.IValueConverter" />
 	/// </summary>
 	/// <seealso cref="System.Windows.Data.IValueConverter" />
 	/// <remarks>
-	/// <para>The <see cref="DataTemplateConverter"/> converts the specified value (a key string) together with parameter (a format string) into a resource URI.
+	/// <para>The <see cref="TemplateConverter"/> converts the specified value (a key string) together with parameter (a format string) into a resource URI.
 	/// The resource will be loaded and converted into a <see cref="DataTemplate"/> or <see cref="ControlTemplate"/>.</para>
 	/// <para>Examples:<br/>
 	/// Value: "<c>OpenIcon.xaml</c>" Parameter: "<c>pack://application:,,,/MyAssembly;component/Resources/{0}</c>"<br/>
@@ -29,12 +29,12 @@ namespace KsWare.Presentation.Converters {
 	/// &lt;ContentControl ContentTemplate="{Binding MyKey, Converter={x:Static ksv:TemplateConverter.Default}, ConverterParameter=/MyResourceAssembly;component/APath/{0}.xaml}"/&gt;
 	/// </code>
 	/// </example>
-	public class DataTemplateConverter : IValueConverter {
+	public class TemplateConverter : IValueConverter {
 
 		/// <summary>
-		/// Gets the default <see cref="DataTemplateConverter"/>.
+		/// Gets the default <see cref="TemplateConverter"/>.
 		/// </summary>
-		public static readonly DataTemplateConverter Default = new DataTemplateConverter();
+		public static readonly TemplateConverter Default = new TemplateConverter();
 
 		/// <summary>
 		/// Gets or sets the converter parameter.
@@ -126,7 +126,7 @@ namespace KsWare.Presentation.Converters {
 		/// <exception cref="NotSupportedException">ConvertBack is not supported!</exception>
 		[SuppressMessage("ReSharper", "TooManyArguments", Justification = "Interface implementation")]
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-			throw new NotSupportedException($"{nameof(DataTemplateConverter)}.ConvertBack is not supported!");
+			throw new NotSupportedException($"{nameof(TemplateConverter)}.ConvertBack is not supported!");
 		}
 
 	}
