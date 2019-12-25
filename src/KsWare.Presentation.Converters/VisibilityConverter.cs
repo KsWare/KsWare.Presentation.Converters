@@ -52,12 +52,12 @@ namespace KsWare.Presentation.Converters {
 		private const Visibility Visible   = Visibility.Visible;
 		private const Visibility Collapsed = Visibility.Collapsed;
 		private const Visibility Hidden    = Visibility.Hidden;
-		private const Value IsTrue     = Value.IsTrue;
-		private const Value IsFalse    = Value.IsFalse;
-		private const Value IsNull     = Value.IsNull;
-		private const Value IsEqual    = Value.IsEqual;
-		private const Value IsNotEqual = Value.IsNotEqual;
-		private const Value IsNullOr0  = Value.IsNullOr0;
+		private const ConditionOperator IsTrue     = ConditionOperator.IsTrue;
+		private const ConditionOperator IsFalse    = ConditionOperator.IsFalse;
+		private const ConditionOperator IsNull     = ConditionOperator.IsNull;
+		private const ConditionOperator IsEqual    = ConditionOperator.IsEqual;
+		private const ConditionOperator IsNotEqual = ConditionOperator.IsNotEqual;
+		private const ConditionOperator IsNullOr0  = ConditionOperator.IsNullOr0;
 
 		private static readonly Dictionary<Expression, VisibilityConverter> Converters;
 
@@ -138,18 +138,26 @@ namespace KsWare.Presentation.Converters {
 			}
 		}
 
-		private VisibilityConverter(Value condition) {
+		private VisibilityConverter(ConditionOperator condition) {
 			Designer  = DependencyProperty.UnsetValue;
 		}
 
-		private VisibilityConverter(Value condition, Visibility conditionIsTrue, Visibility conditionIsFalse) {
+		public VisibilityConverter(ConditionOperator condition, Visibility conditionIsTrue, Visibility conditionIsFalse) {
 			Designer  = DependencyProperty.UnsetValue;
 			Condition = condition;
 			True      = conditionIsTrue;
 			Else      = conditionIsFalse;
 		}
 
-		private enum Value {
+		// TODO support IsEqual, IsNotEqual for MarkupExtension, add docu
+		// public VisibilityConverter(ConditionOperator condition, string compareValue, Visibility conditionIsTrue, Visibility conditionIsFalse) {
+		// 	Designer = DependencyProperty.UnsetValue;
+		// 	Condition = condition;
+		// 	True = conditionIsTrue;
+		// 	Else = conditionIsFalse;
+		// }
+
+		public enum ConditionOperator {
 			IsNull,
 			IsNullOr0,
 			IsTrue,
@@ -162,7 +170,7 @@ namespace KsWare.Presentation.Converters {
 
 		private Visibility Else { get; set; }
 
-		private Value Condition { get; set; }
+		private ConditionOperator Condition { get; set; }
 
 		private object Designer { get; set; }
 
@@ -205,7 +213,7 @@ namespace KsWare.Presentation.Converters {
 		private bool GetBool(object value, object parameter) {
 
 			switch (Condition) {
-				case Value.IsEqual: case Value.IsNotEqual: {
+				case ConditionOperator.IsEqual: case ConditionOperator.IsNotEqual: {
 					if (value == null && parameter==null) return true;
 					if (value == null || parameter==null) return false;
 					return ConvertEqual(value, parameter);

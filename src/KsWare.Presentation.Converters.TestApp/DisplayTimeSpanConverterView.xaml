@@ -1,0 +1,18 @@
+﻿<UserControl 
+	x:Class="KsWare.Presentation.Converters.TestApp.DisplayTimeSpanConverterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:KsWare.Presentation.Converters.TestApp"
+             xmlns:ksv="http://ksware.de/Presentation/ViewFramework"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" >
+    <FrameworkElement.Resources>
+	    <system:TimeSpan x:Key="TotalMinutes">02:01:00</system:TimeSpan>
+    </FrameworkElement.Resources>
+	<StackPanel>
+		<TextBlock Text="{Binding Source={StaticResource TotalMinutes}}"/>
+		<TextBlock Text="{Binding Source={StaticResource TotalMinutes}, Converter={ksv:DisplayTimeSpanConverter 'mmm:ss'}}"/>
+    </StackPanel>
+</UserControl>

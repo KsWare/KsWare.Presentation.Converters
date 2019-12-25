@@ -71,6 +71,7 @@ namespace KsWare.Presentation.Converters {
 				case "-Bottom": return new Thickness(0, 0, 0, -v);
 				case string _ when p.Contains("*"): // ConverterParameter='0 * 0 0'
 					return converter.ConvertFromString(p.Replace("*", v.ToString(enus)));
+				// TODO not documented formats
 				case string _ when p.Contains("{0}"): // ConverterParameter='0 -{0} 0 0'
 					var match = Regex.Match(p, @"(\{)((?>\{(?<d>)|\}(?<-d>)|.?)*(?(d)(?!)))(\})", RegexOptions.Compiled);
 					p = p.Replace(match.Value, v.ToString(enus));

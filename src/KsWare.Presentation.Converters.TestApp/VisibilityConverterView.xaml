@@ -18,5 +18,6 @@
 		<!-- TODO MarkupExtension is invisible at design time! -->
 		<TextBlock Text="MarkupExtension" Visibility="{Binding Converter={ksv:VisibilityConverter TrueVisibleElseCollapsed}}" />
 		<TextBlock Text="VisibilityBinding" Visibility="{ksv:VisibilityBinding .,TrueVisibleElseCollapsed}" />
+		<TextBlock Text="MarkupExtension Ex" Visibility="{Binding Converter={ksv:VisibilityConverter IsTrue, Visible, Hidden}}" />
 	</StackPanel>
 </UserControl>

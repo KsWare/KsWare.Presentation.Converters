@@ -40,7 +40,8 @@
     <RepositoryUrl>https://github.com/KsWare/KsWare.Presentation.Converters</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/KsWare/KsWare.Presentation.Converters</PackageProjectUrl>
-    <Description>Converters for KsWare Presentation Framework</Description>
+    <Description>Converters for KsWare Presentation Framework
+Supports .Net 4.5+ and Core 3.x"</Description>
     <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
     <PackageTags>Converter KsWare Presentation Framework</PackageTags>
   </PropertyGroup>

@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KsWare.Presentation.Converters.TestApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow">
     <StackPanel>
-		<local:VisibilityConverterView/>
+		<local:DisplayTimeSpanConverterView/>
     </StackPanel>
 </Window>
