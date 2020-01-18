@@ -135,6 +135,17 @@ namespace KsWare.Presentation.Converters
 			var controlTemplate = (ControlTemplate)XamlReader.Load(xr);
 			return controlTemplate;
 		}
+
+		public static Image CreateImage(Uri locationUri) {
+			var templateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+	<Image xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" Source=""{locationUri.OriginalString}"" Stretch=""Uniform"" />
+";
+			var sr = new StringReader(templateXaml);
+			var xr = XmlReader.Create(sr);
+			var image = (Image)XamlReader.Load(xr);
+			return image;
+		}
+
 		public static DataTemplate CreateErrorTemplate(string message)
 		{
 			var dataTemplate = new DataTemplate();

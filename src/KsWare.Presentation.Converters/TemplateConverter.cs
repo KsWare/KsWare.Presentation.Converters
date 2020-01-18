@@ -88,6 +88,7 @@ namespace KsWare.Presentation.Converters {
 								default: return null;
 							}
 						default:
+							if (targetType.IsInstanceOfType(resourceObject)) return resourceObject;
 							throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
 					}
 
@@ -99,7 +100,10 @@ namespace KsWare.Presentation.Converters {
 					switch (targetType.Name) {
 						case nameof(DataTemplate): return CreateDataTemplateFromImage(locationUri);
 						case nameof(ControlTemplate): return CreateControlTemplateFromImage(locationUri);
-						default: throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
+						default:
+							if (targetType.IsAssignableFrom(typeof(System.Windows.Controls.Image)))
+								return CreateImage(locationUri);
+							throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
 					}
 				case "image/gif":
 				case "image/svg+xml":

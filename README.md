@@ -32,17 +32,19 @@ Converts a numeric value in the hexadecimal string presentation
 
 ## SingleValueThicknessConverter
 
-Cnverter a single numeric value to a thickness.
+Converts a single numeric value to a thickness.
 
 - ```Left```: new Thickness(value, 0, 0, 0)
 - ```Top```: new Thickness(0, value, 0, 0)
 - ```Right```: new Thickness(0, 0, value, 0)
 - ```Bottom```: new Thickness(0, 0, 0, value)
+
 Negative values
 - ```-Left```: new Thickness(-value, 0, 0, 0)
 - ```-Top```: new Thickness(0, -value, 0, 0)
 - ```-Right```: new Thickness(0, 0, -value, 0)
 - ```-Bottom```: new Thickness(0, 0, 0, -value)
+
 Combined values
 - ```* -* 80 20```: new Thickness(value, -value, 80, 20)
 ```xml
@@ -59,6 +61,18 @@ Converts anything to a string.
 
 
 ## TemplateConverter
+
+Example: Icon="Example.xaml" or "Example.ico" ,...
+```xml
+<MenuItem Icon="{Binding Icon, Converter={ksv:TemplateConverter}, ConverterParameter=/Kushed;component/Resources/" />
+```
+
+Example: Icon="Example"
+```xml
+<MenuItem Icon="{Binding Icon, Converter={ksv:TemplateConverter}, ConverterParameter=pack://application:,,,/MyAssembly;component/Resources/{0}.xaml}" />
+```
+
+
 
 ## TypeNameConverter
 
