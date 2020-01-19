@@ -70,13 +70,14 @@ namespace KsWare.Presentation.Converters
 			var resourcePath = (ResourcePath ?? "").Trim();
 			string p = null;
 			if (resourcePath.Length==0 || resourcePath.StartsWith("."))
-				p = EnhanceCurrentPath(serviceProvider, ResourcePath);
+				resourcePath = EnhanceCurrentPath(serviceProvider, ResourcePath);
 			else if (resourcePath.Contains("EntryAssembly"))
-				p = EnhanceEntryAssemblyPath(ResourcePath);
+				resourcePath = EnhanceEntryAssemblyPath(ResourcePath);
 			else if (resourcePath.Contains("ExecutingAssembly"))
-				p = EnhanceExecutingAssemblyPath(serviceProvider, resourcePath);
+				resourcePath = EnhanceExecutingAssemblyPath(serviceProvider, resourcePath);
+			
 
-			return new TemplateConverter {ConverterParameter = p};
+			return new TemplateConverter {ConverterParameter = resourcePath };
 		}
 
 		private string EnhanceCurrentPath(IServiceProvider serviceProvider, string resourcePath)

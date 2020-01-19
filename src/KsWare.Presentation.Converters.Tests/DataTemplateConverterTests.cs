@@ -24,17 +24,26 @@ namespace KsWare.Presentation.Converters.Tests
 			Assert.That(result, Is.TypeOf<DataTemplate>());
 		}
 
-//		[Test, Apartment(ApartmentState.STA)]
-//		public void Test2()
-//		{
-//			var element = new Image {Stretch = Stretch.Uniform};
-//			ImageBehavior.SetAnimatedSource(element, new BitmapImage(new Uri("pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/GifResource.gif")));
-//			var xaml = System.Windows.Markup.XamlWriter.Save(element);
-//			var stream = new MemoryStream();
-//			new StreamWriter(stream,Encoding.UTF8).Write(xaml);
-//			stream.Position = 0;
-//
-//			var element2 = System.Windows.Markup.XamlReader.Load(stream);
-//		}
+		[TestCase("IconResource")]
+		public void Test2(string key) {
+			var sut = new TemplateConverter() {
+				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}.ico"
+			};
+			var result = sut.Convert(key, typeof(DataTemplate), null, null);
+			Assert.That(result, Is.TypeOf<DataTemplate>());
+		}
+
+		//		[Test, Apartment(ApartmentState.STA)]
+		//		public void Test2()
+		//		{
+		//			var element = new Image {Stretch = Stretch.Uniform};
+		//			ImageBehavior.SetAnimatedSource(element, new BitmapImage(new Uri("pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/GifResource.gif")));
+		//			var xaml = System.Windows.Markup.XamlWriter.Save(element);
+		//			var stream = new MemoryStream();
+		//			new StreamWriter(stream,Encoding.UTF8).Write(xaml);
+		//			stream.Position = 0;
+		//
+		//			var element2 = System.Windows.Markup.XamlReader.Load(stream);
+		//		}
 	}
 }
