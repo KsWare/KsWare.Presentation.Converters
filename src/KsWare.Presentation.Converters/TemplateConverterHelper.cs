@@ -12,43 +12,34 @@ using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace KsWare.Presentation.Converters
 {
-	internal static class TemplateConverterHelper
-	{
-		public static object ReadResource(StreamResourceInfo streamResourceInfo)
-		{
-			switch (streamResourceInfo.ContentType)
-			{
+	internal static class TemplateConverterHelper {
+		public static object ReadResource(StreamResourceInfo streamResourceInfo) {
+			switch (streamResourceInfo.ContentType) {
 				case "application/baml+xml": return ReadPage(streamResourceInfo.Stream);
 				case "application/xaml+xml": return ReadResource(streamResourceInfo.Stream);
 				default: return null;
 			}
 		}
 
-		public static object ReadResource(Stream stream)
-		{
+		public static object ReadResource(Stream stream) {
 			// read the stream for build action "Resource"
 			var xamlReader = new XamlReader();
 			return xamlReader.LoadAsync(stream);
 		}
 
-		public static object ReadPage(Stream stream)
-		{
+		public static object ReadPage(Stream stream) {
 			// read the stream for build action "Page"
 			using (var bamlReader = new Baml2006Reader(stream))
-			using (var writer = new XamlObjectWriter(bamlReader.SchemaContext))
-			{
+			using (var writer = new XamlObjectWriter(bamlReader.SchemaContext)) {
 				while (bamlReader.Read()) writer.WriteNode(bamlReader);
 				return writer.Result;
 			}
 		}
 
-		public static Uri GetLocationUri(object value, object parameter)
-		{
-			switch (value)
-			{
+		public static Uri GetLocationUri(object value, object parameter) {
+			switch (value) {
 				case string s: return GetLocationUriFromString(s, parameter);
-				default:
-					{
+				default: {
 						var valueAsString = value as string;
 						if (string.IsNullOrEmpty(valueAsString))
 							throw new InvalidOperationException("Resource key not specified!");
@@ -58,8 +49,7 @@ namespace KsWare.Presentation.Converters
 
 		}
 
-		public static Uri GetLocationUriFromString(string value, object parameter)
-		{
+		public static Uri GetLocationUriFromString(string value, object parameter) {
 			var stringParameter = (parameter as string)??"";
 
 			string url;
@@ -82,8 +72,7 @@ namespace KsWare.Presentation.Converters
 			// pack://application:,,,/{EntryAssembly};component/Resources/
 		}
 
-		public static DataTemplate CreateDataTemplateFromUIElement(UIElement content)
-		{
+		public static DataTemplate CreateDataTemplateFromUIElement(UIElement content) {
 			var contentXaml = SerializeToXaml(content);
 			var templateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
@@ -96,8 +85,8 @@ namespace KsWare.Presentation.Converters
 			var dataTemplate = (DataTemplate)XamlReader.Load(xr);
 			return dataTemplate;
 		}
-		public static ControlTemplate CreateControlTemplateFromUIElement(UIElement content)
-		{
+
+		public static ControlTemplate CreateControlTemplateFromUIElement(UIElement content) {
 			var contentXaml = SerializeToXaml(content);
 			var templateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <ControlTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
@@ -110,8 +99,8 @@ namespace KsWare.Presentation.Converters
 			var controlTemplate = (ControlTemplate)XamlReader.Load(xr);
 			return controlTemplate;
 		}
-		public static DataTemplate CreateDataTemplateFromImage(Uri locationUri)
-		{
+
+		public static DataTemplate CreateDataTemplateFromImage(Uri locationUri) {
 			var dataTemplateXaml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
 	<Image Source=""{locationUri.OriginalString}"" Stretch=""Uniform"" />
@@ -146,24 +135,37 @@ namespace KsWare.Presentation.Converters
 			return image;
 		}
 
-		public static DataTemplate CreateErrorTemplate(string message)
-		{
-			var dataTemplate = new DataTemplate();
-			var textBlock = new FrameworkElementFactory(typeof(TextBlock));
-			textBlock.SetValue(TextBlock.TextProperty, message);
-			textBlock.SetValue(TextBlock.ForegroundProperty, Brushes.Red);
-			dataTemplate.VisualTree = textBlock;
-			return dataTemplate;
+		public static object CreateErrorTemplate(string message, Type targetType) {
+			switch (targetType.Name) {
+				case nameof(DataTemplate): {
+					var dataTemplate = new DataTemplate();
+					var textBlock = new FrameworkElementFactory(typeof(TextBlock));
+					textBlock.SetValue(TextBlock.TextProperty, message);
+					textBlock.SetValue(TextBlock.ForegroundProperty, Brushes.Red);
+					dataTemplate.VisualTree = textBlock;
+					return dataTemplate;
+				}
+				case nameof(ControlTemplate): {
+					var controlTemplate = new ControlTemplate();
+					var textBlock = new FrameworkElementFactory(typeof(TextBlock));
+					textBlock.SetValue(TextBlock.TextProperty, message);
+					textBlock.SetValue(TextBlock.ForegroundProperty, Brushes.Red);
+					controlTemplate.VisualTree = textBlock;
+					return controlTemplate;
+				}
+					
+				default:
+					var resourceObject = new TextBlock {Text = message, Foreground = Brushes.Red};
+					if (targetType.IsInstanceOfType(resourceObject)) return resourceObject;
+					throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
+			}
 		}
 
-		public static string SerializeToXaml(UIElement element)
-		{
+		public static string SerializeToXaml(UIElement element) {
 			var xaml = System.Windows.Markup.XamlWriter.Save(element);
 
-			using (var stream = new MemoryStream())
-			{
-				using (var streamWriter = new StreamWriter(stream, Encoding.UTF8, 64 * 1024, true))
-				{
+			using (var stream = new MemoryStream()) {
+				using (var streamWriter = new StreamWriter(stream, Encoding.UTF8, 64 * 1024, true)) {
 					streamWriter.Write(xaml);
 				}
 
@@ -172,13 +174,11 @@ namespace KsWare.Presentation.Converters
 			}
 		}
 
-		public static string GetLocationFormatString(string locationString)
-		{
+		public static string GetLocationFormatString(string locationString) {
 			return locationString + (locationString.EndsWith("/") ? "" : "/") + @"{0}.xaml";
 		}
 
-		public static string CombinePath(string p0, string p1)
-		{
+		public static string CombinePath(string p0, string p1) {
 			var sep = p0.EndsWith("/") || p1.StartsWith("/") ? "" : "/";
 			return p0 + sep + p1;
 		}

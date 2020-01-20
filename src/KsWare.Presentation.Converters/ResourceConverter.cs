@@ -65,7 +65,7 @@ namespace KsWare.Presentation.Converters {
 			    locationUri.OriginalString.StartsWith("pack://application:,,,/ERROR")
 			) {
 				//maybe design mode
-				return CreateErrorTemplate($"{value}");
+				return CreateErrorTemplate($"{value}", targetType);
 			}
 
 			StreamResourceInfo streamResourceInfo;
@@ -75,7 +75,7 @@ namespace KsWare.Presentation.Converters {
 				var root=Path.GetDirectoryName((Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()).Location);
 				var path = string.Join("", locationUri.Segments.Skip(2)).Replace("/","\\");
 				path = Path.Combine(root, path);
-				if(!File.Exists(path)) CreateErrorTemplate($"{value}"); ;
+				if(!File.Exists(path)) return CreateErrorTemplate($"{value}", targetType);
 				var contentType = GetContentType(path);
 				var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 				streamResourceInfo = new StreamResourceInfo(stream, contentType);

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
 using NUnit.Framework;
 
 namespace KsWare.Presentation.Converters.Tests
@@ -14,32 +16,67 @@ namespace KsWare.Presentation.Converters.Tests
 
 		[TestCase("BitmapResource.bmp")]
 		[TestCase("IconResource.ico")]
+		[Apartment(ApartmentState.STA)]
 		public void Test(string key)
 		{
 			var sut = new ResourceConverter()
 			{
 				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}"
 			};
-			var result = sut.Convert(key, typeof(DataTemplate), null, null);
-			Assert.That(result, Is.TypeOf<DataTemplate>());
+			var result = sut.Convert(key, typeof(object), null, null);
+			Assert.That(result, Is.Not.Null.And.Not.TypeOf<TextBlock>());
 		}
 
 		[TestCase("IconResource")]
-		public void Test2(string key) {
+		[Apartment(ApartmentState.STA)]
+		public void Image(string key) {
+			var sut = new ResourceConverter() {
+				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}.ico"
+			};
+			var result = sut.Convert(key, typeof(object), null, null);
+			Assert.That(result, Is.Not.Null.And.Not.TypeOf<TextBlock>());
+		}
+
+		[TestCase("IconResource")]
+		[Apartment(ApartmentState.STA)]
+		public void DataTemplate(string key) {
 			var sut = new ResourceConverter() {
 				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}.ico"
 			};
 			var result = sut.Convert(key, typeof(DataTemplate), null, null);
 			Assert.That(result, Is.TypeOf<DataTemplate>());
+			//TODO test IsNotErrorTemplate
+		}
+
+		[TestCase("IconResource")]
+		[Apartment(ApartmentState.STA)]
+		public void ControlTemplate(string key) {
+			var sut = new ResourceConverter() {
+				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}.ico"
+			};
+			var result = sut.Convert(key, typeof(ControlTemplate), null, null);
+			Assert.That(result, Is.TypeOf<ControlTemplate>());
+			//TODO test IsNotErrorTemplate
 		}
 
 		[TestCase("Icon")]
+		[Apartment(ApartmentState.STA)]
 		public void Test3(string key) {
 			var sut = new ResourceConverter() {
 				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}.ico"
 			};
-			var result = sut.Convert(key, typeof(DataTemplate), null, null);
-			Assert.That(result, Is.TypeOf<DataTemplate>());
+			var result = sut.Convert(key, typeof(object), null, null);
+			Assert.That(result, Is.Not.Null.And.Not.TypeOf<TextBlock>());
+		}
+
+		[Test]
+		[Apartment(ApartmentState.STA)]
+		public void Test_Fail() {
+			var sut = new ResourceConverter() {
+				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}.ico"
+			};
+			var result = sut.Convert("_NA_", typeof(object), null, null);
+			Assert.That(result, Is.TypeOf<TextBlock>());
 		}
 
 		//		[Test, Apartment(ApartmentState.STA)]
