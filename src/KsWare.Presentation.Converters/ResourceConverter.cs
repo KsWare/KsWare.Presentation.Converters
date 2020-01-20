@@ -11,30 +11,30 @@ using static KsWare.Presentation.Converters.TemplateConverterHelper;
 namespace KsWare.Presentation.Converters {
 
 	/// <summary>
-	/// Class TemplateConverter.
+	/// Class ResourceConverter.
 	/// Implements the <see cref="System.Windows.Data.IValueConverter" />
 	/// </summary>
 	/// <seealso cref="System.Windows.Data.IValueConverter" />
 	/// <remarks>
-	/// <para>The <see cref="TemplateConverter"/> converts the specified value (a key string) together with parameter (a format string) into a resource URI.
+	/// <para>The <see cref="ResourceConverter"/> converts the specified value (a key string) together with parameter (a format string) into a resource URI.
 	/// The resource will be loaded and converted into a <see cref="DataTemplate"/> or <see cref="ControlTemplate"/>.</para>
 	/// <para>Examples:<br/>
 	/// Value: "<c>OpenIcon.xaml</c>" Parameter: "<c>pack://application:,,,/MyAssembly;component/Resources/{0}</c>"<br/>
 	/// Value: "<c>OpenIcon.ico</c>" Parameter: "<c>/MyAssembly;component/Resources</c>"<br/>
 	/// </para>
-	/// <para>See also available markup extensions: <see cref="TemplateConverterExtension"/>, <see cref="ExecutingAssemblyTemplateConverterExtension"/>, <see cref="EntryAssemblyTemplateConverterExtension"/>.</para>
+	/// <para>See also available markup extensions: <see cref="ResourceConverterExtension"/>, <see cref="ExecutingAssemblyResourceConverterExtension"/>, <see cref="EntryAssemblyResourceConverterExtension"/>.</para>
 	/// </remarks>
 	/// <example>
 	/// <code>
-	/// &lt;ContentControl ContentTemplate="{Binding MyKey, Converter={x:Static ksv:TemplateConverter.Default}, ConverterParameter=/MyResourceAssembly;component/APath/{0}.xaml}"/&gt;
+	/// &lt;ContentControl ContentTemplate="{Binding MyKey, Converter={x:Static ksv:ResourceConverter.Default}, ConverterParameter=/MyResourceAssembly;component/APath/{0}.xaml}"/&gt;
 	/// </code>
 	/// </example>
-	public class TemplateConverter : IValueConverter {
+	public class ResourceConverter : IValueConverter {
 
 		/// <summary>
-		/// Gets the default <see cref="TemplateConverter"/>.
+		/// Gets the default <see cref="ResourceConverter"/>.
 		/// </summary>
-		public static readonly TemplateConverter Default = new TemplateConverter();
+		public static readonly ResourceConverter Default = new ResourceConverter();
 
 		/// <summary>
 		/// Gets or sets the converter parameter.
@@ -130,7 +130,7 @@ namespace KsWare.Presentation.Converters {
 		/// <exception cref="NotSupportedException">ConvertBack is not supported!</exception>
 		[SuppressMessage("ReSharper", "TooManyArguments", Justification = "Interface implementation")]
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-			throw new NotSupportedException($"{nameof(TemplateConverter)}.ConvertBack is not supported!");
+			throw new NotSupportedException($"{nameof(ResourceConverter)}.ConvertBack is not supported!");
 		}
 
 	}

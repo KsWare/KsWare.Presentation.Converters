@@ -7,7 +7,9 @@ Converters for KsWare Presentation Framework
 - [SingleValueThicknessConverter](##SingleValueThicknessConverter)
 - [StringConverter](##StringConverter)
 - [StringJoinConverter](##StringJoinConverter)
-- [TemplateConverter](##TemplateConverter)
+- [ResourceConverter](##ResourceConverter)
+  - ResourceConverterExtension](###ResourceConverterExtension)
+  - EntryAssemblyResourceConverterExtension](###ExecutingAssemblyResourceConverterExtension)
 - [TypeNameConverter](##TypeNameConverter)
 - [VisibilityConverter](##VisibilityConverter)
 
@@ -60,18 +62,50 @@ Converts anything to a string.
 ## StringJoinConverter
 
 
-## TemplateConverter
+## ResourceConverter
 
 Example: Icon="Example.xaml" or "Example.ico" ,...
 ```xml
-<MenuItem Icon="{Binding Icon, Converter={ksv:TemplateConverter}, ConverterParameter=/Kushed;component/Resources/" />
+<MenuItem Icon="{Binding Icon, Converter={x:Static ksv:ResourceConverter.Default}, ConverterParameter=/Kushed;component/Resources/" />
 ```
 
 Example: Icon="Example"
 ```xml
-<MenuItem Icon="{Binding Icon, Converter={ksv:TemplateConverter}, ConverterParameter=pack://application:,,,/MyAssembly;component/Resources/{0}.xaml}" />
+<MenuItem Icon="{Binding Icon, Converter={x:Static ksv:ResourceConverter.Default}, ConverterParameter=pack://application:,,,/MyAssembly;component/Resources/{0}.xaml}" />
+```
+### ResourceConverterExtension
+
+Example: Icon="Example"
+```xml
+<MenuItem Icon="{Binding Icon, Converter={ksv:ResourceConverter pack://application:,,,/MyAssembly;component/Resources/{0}.xaml}}" />
 ```
 
+Example: Icon="Example.xaml" located in same folder of current document
+```xml
+<MenuItem Icon="{Binding Icon, Converter={ksv:ResourceConverter}" />
+```
+Example: Icon="Example.xaml" located in Data folder of current documents assembly
+```xml
+<MenuItem Icon="{Binding Icon, Converter={ksv:ResourceConverter /Data}" />
+```
+Example: Icon="Example.xaml" located in Sub folder of current documents.
+```xml
+<MenuItem Icon="{Binding Icon, Converter={ksv:ResourceConverter /Sub}" />
+```
+Example: Icon="Example.xaml" located in Data folder of specified assembly.
+```xml
+<MenuItem Icon="{Binding Icon, Converter={ksv:ResourceConverter MyAssembly, /Data}" />
+```
+Example: Icon="Example.xaml" located in Data folder of entry assembly.
+```xml
+<MenuItem Icon="{Binding Icon, Converter={ksv:EntryAssemblyResourceConverter EntryAssembly, /Data}" />
+```
+
+### EntryAssemblyResourceConverterExtension
+Example: Icon="Example.xaml" located in Data folder of entry assembly.
+```xml
+<MenuItem Icon="{Binding Icon, Converter={ksv:EntryAssemblyResourceConverter /Data}" />
+```
 
 
 ## TypeNameConverter

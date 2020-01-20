@@ -4,19 +4,19 @@ using NUnit.Framework;
 namespace KsWare.Presentation.Converters.Tests
 {
 	[TestFixture()]
-	public class DataTemplateConverterTests
+	public class ResourceConverterTests
 	{
 		[SetUp]
 		public void Setup()
 		{
-			var s = System.IO.Packaging.PackUriHelper.UriSchemePack;
+			var _ = System.IO.Packaging.PackUriHelper.UriSchemePack;
 		}
 
 		[TestCase("BitmapResource.bmp")]
 		[TestCase("IconResource.ico")]
 		public void Test(string key)
 		{
-			var sut = new TemplateConverter()
+			var sut = new ResourceConverter()
 			{
 				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}"
 			};
@@ -26,7 +26,7 @@ namespace KsWare.Presentation.Converters.Tests
 
 		[TestCase("IconResource")]
 		public void Test2(string key) {
-			var sut = new TemplateConverter() {
+			var sut = new ResourceConverter() {
 				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}.ico"
 			};
 			var result = sut.Convert(key, typeof(DataTemplate), null, null);

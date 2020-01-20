@@ -4,9 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KsWare.Presentation.Converters.TestApp"
+        xmlns:ksv="http://ksware.de/Presentation/ViewFramework"
         mc:Ignorable="d"
         Title="MainWindow">
     <StackPanel>
-		<local:DisplayTimeSpanConverterView/>
+		<!-- <local:DisplayTimeSpanConverterView/> -->
+		<TextBlock Text="{Binding Source=X, Converter={ksv:ResourceConverter}}"/>
     </StackPanel>
 </Window>
