@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -68,56 +70,89 @@ namespace KsWare.Presentation.Converters {
 
 			StreamResourceInfo streamResourceInfo;
 			try { streamResourceInfo = Application.GetResourceStream(locationUri); }
-			catch (IOException ex) { throw; }
+			catch (IOException ex) {
+				// Fallback to local directory
+				var root=Path.GetDirectoryName((Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()).Location);
+				var path = string.Join("", locationUri.Segments.Skip(2)).Replace("/","\\");
+				path = Path.Combine(root, path);
+				if(!File.Exists(path)) CreateErrorTemplate($"{value}"); ;
+				var contentType = GetContentType(path);
+				var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+				streamResourceInfo = new StreamResourceInfo(stream, contentType);
+			}
 
-			switch (streamResourceInfo.ContentType) {
-				case "application/baml+xml":
-				case "application/xaml+xml":
-					object resourceObject = ReadResource(streamResourceInfo);
-					switch (targetType.Name) {
-						case nameof(DataTemplate):
-							switch (resourceObject) {
-								case DataTemplate dataTemplate: return dataTemplate;
-								case UIElement uiElement: return CreateDataTemplateFromUIElement(uiElement);
-								default: return null;
-							}
-						case nameof(ControlTemplate):
-							switch (resourceObject) {
-								case ControlTemplate controlTemplate: return controlTemplate;
-								case UIElement uiElement: return CreateControlTemplateFromUIElement(uiElement);
-								default: return null;
-							}
-						default:
-							if (targetType.IsInstanceOfType(resourceObject)) return resourceObject;
-							throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
-					}
+			try {
 
-				case "image/bmp":
-				case "image/tiff":
-				case "image/jpeg":
-				case "image/png":
-				case "image/x-icon":
-					switch (targetType.Name) {
-						case nameof(DataTemplate): return CreateDataTemplateFromImage(locationUri);
-						case nameof(ControlTemplate): return CreateControlTemplateFromImage(locationUri);
-						default:
-							if (targetType.IsAssignableFrom(typeof(System.Windows.Controls.Image)))
-								return CreateImage(locationUri);
-							throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
-					}
-				case "image/gif":
-				case "image/svg+xml":
-				default:
-					switch (targetType.Name) {
-						case nameof(DataTemplate):
-							return TemplateConverterPluginHelper.GetPlugin(streamResourceInfo.ContentType)?.CreateDataTemplate(locationUri);
-						case nameof(ControlTemplate):
-							return TemplateConverterPluginHelper.GetPlugin(streamResourceInfo.ContentType)
-								?.CreateControlTemplate(locationUri);
-						default: throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
-					}
+				switch (streamResourceInfo.ContentType) {
+					case "application/baml+xml": // Page
+					case "application/xaml+xml": // Resource
+						object resourceObject = ReadResource(streamResourceInfo);
+						switch (targetType.Name) {
+							case nameof(DataTemplate):
+								switch (resourceObject) {
+									case DataTemplate dataTemplate: return dataTemplate;
+									case UIElement uiElement: return CreateDataTemplateFromUIElement(uiElement);
+									default: return null;
+								}
+							case nameof(ControlTemplate):
+								switch (resourceObject) {
+									case ControlTemplate controlTemplate: return controlTemplate;
+									case UIElement uiElement: return CreateControlTemplateFromUIElement(uiElement);
+									default: return null;
+								}
+							default:
+								if (targetType.IsInstanceOfType(resourceObject)) return resourceObject;
+								throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
+						}
+
+					case "image/bmp":
+					case "image/tiff":
+					case "image/jpeg":
+					case "image/png":
+					case "image/x-icon":
+						switch (targetType.Name) {
+							case nameof(DataTemplate): return CreateDataTemplateFromImage(locationUri);
+							case nameof(ControlTemplate): return CreateControlTemplateFromImage(locationUri);
+							default:
+								if (targetType.IsAssignableFrom(typeof(System.Windows.Controls.Image)))
+									return CreateImage(locationUri);
+								throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
+						}
+					case "image/gif":
+					case "image/svg+xml":
+					default:
+						switch (targetType.Name) {
+							case nameof(DataTemplate):
+								return TemplateConverterPluginHelper.GetPlugin(streamResourceInfo.ContentType)
+									?.CreateDataTemplate(locationUri);
+							case nameof(ControlTemplate):
+								return TemplateConverterPluginHelper.GetPlugin(streamResourceInfo.ContentType)
+									?.CreateControlTemplate(locationUri);
+							default: throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
+						}
+				}
+			}
+			finally {
+				streamResourceInfo?.Stream?.Dispose();
 			}
 		}
+
+		private string GetContentType(string path) {
+			var ext = Path.GetExtension(path)?.ToLower(CultureInfo.InstalledUICulture);
+			switch (ext) {
+				case ".xaml": return "application/xaml+xml";
+				case ".bmp": return "image/bmp";
+				case ".tiff": case ".tif": return "image/tiff";
+				case ".jpeg": case ".jpg": return "image/jpeg";
+				case ".png": return "image/png";
+				case ".ico": return "image/x-icon";
+				case ".gif": return "image/gif";
+				case ".svg": return "image/svg+xml";
+				default: throw new NotSupportedException($"Extension not supported. Extension: '{ext}'");
+			}
+		}
+
+
 
 		/// <summary>
 		/// [Not supported]

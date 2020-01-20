@@ -33,6 +33,15 @@ namespace KsWare.Presentation.Converters.Tests
 			Assert.That(result, Is.TypeOf<DataTemplate>());
 		}
 
+		[TestCase("Icon")]
+		public void Test3(string key) {
+			var sut = new ResourceConverter() {
+				ConverterParameter = @"pack://application:,,,/KsWare.Presentation.Converters.Tests;component/TestData/{0}.ico"
+			};
+			var result = sut.Convert(key, typeof(DataTemplate), null, null);
+			Assert.That(result, Is.TypeOf<DataTemplate>());
+		}
+
 		//		[Test, Apartment(ApartmentState.STA)]
 		//		public void Test2()
 		//		{
