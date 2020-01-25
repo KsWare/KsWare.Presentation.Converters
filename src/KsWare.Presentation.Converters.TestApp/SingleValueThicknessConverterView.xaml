@@ -9,6 +9,6 @@
              d:DesignHeight="450" d:DesignWidth="800">
 	<x:Code><![CDATA[public SingleValueThicknessConverterView(){InitializeComponent();}]]></x:Code>
 	<Grid>
-		<TextBlock Margin="{Binding Source=1, Converter={ksv:SingleValueThicknessConverter -Top}}"></TextBlock>   
+		<TextBlock Margin="{Binding Source=1, Converter={SingleValueThicknessConverter -Top}}"></TextBlock>   
     </Grid>
 </UserControl>

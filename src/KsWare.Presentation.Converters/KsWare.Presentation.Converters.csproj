@@ -34,7 +34,7 @@
     <Company>KsWare</Company>
     <Authors>KsWare</Authors>
     <Product>Presentation Framework</Product>
-    <Copyright>Copyright © 2002-2019 by KsWare. All rights reserved.</Copyright>
+    <Copyright>Copyright © by KsWare. All rights reserved.</Copyright>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/KsWare/KsWare.Presentation.Converters</RepositoryUrl>

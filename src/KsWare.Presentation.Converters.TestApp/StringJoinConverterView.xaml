@@ -15,8 +15,8 @@
 	<Grid>
 		<TextBlock>
             <TextBlock.Text>
-	            <MultiBinding Converter="{ksv:StringJoinConverter Separator='-'}">
-					<Binding Source="{StaticResource Double}" Converter="{ksv:StringConverter F1}" />
+	            <MultiBinding Converter="{StringJoinConverter Separator='-'}">
+					<Binding Source="{StaticResource Double}" Converter="{StringConverter F1}" />
 					<Binding Source="ProTwo" />
 					<Binding Source="34.45" />
 					<Binding Source="ProFour" />

@@ -13,6 +13,6 @@
     </FrameworkElement.Resources>
 	<StackPanel>
 		<TextBlock Text="{Binding Source={StaticResource TotalMinutes}}"/>
-		<TextBlock Text="{Binding Source={StaticResource TotalMinutes}, Converter={ksv:DisplayTimeSpanConverter 'mmm:ss'}}"/>
+		<TextBlock Text="{Binding Source={StaticResource TotalMinutes}, Converter={DisplayTimeSpanConverter 'mmm:ss'}}"/>
     </StackPanel>
 </UserControl>
