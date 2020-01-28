@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Data;
 using System.Windows.Markup;
-using static KsWare.Presentation.Converters.TemplateConverterHelper;
+using static KsWare.Presentation.Converters.ResourceConverterHelper;
 
 namespace KsWare.Presentation.Converters {
 

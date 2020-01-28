@@ -63,9 +63,9 @@
     <Resource Include="TestData\SvgResource.svg" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KsWare.Presentation.Converters.Gif" Version="0.1.11" />
+    <PackageReference Include="KsWare.Presentation.Converters.Gif" Version="0.1.13" />
     <PackageReference Include="KsWare.Presentation.Converters.Svg" Version="0.1.8" />
-    <PackageReference Include="KsWare.Presentation.Interfaces" Version="0.1.35" />
+    <PackageReference Include="KsWare.Presentation.Interfaces" Version="0.1.40" />
     <PackageReference Include="KsWare.XamlAnimatedGif.Wpf.StrongName" Version="1.2.2.24" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="Moq" Version="4.13.1" />

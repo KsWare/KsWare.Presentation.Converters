@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Resources;
-using static KsWare.Presentation.Converters.TemplateConverterHelper;
+using static KsWare.Presentation.Converters.ResourceConverterHelper;
 
 namespace KsWare.Presentation.Converters {
 
@@ -121,15 +121,8 @@ namespace KsWare.Presentation.Converters {
 					case "image/gif":
 					case "image/svg+xml":
 					default:
-						switch (targetType.Name) {
-							case nameof(DataTemplate):
-								return TemplateConverterPluginHelper.GetPlugin(streamResourceInfo.ContentType)
-									?.CreateDataTemplate(locationUri);
-							case nameof(ControlTemplate):
-								return TemplateConverterPluginHelper.GetPlugin(streamResourceInfo.ContentType)
-									?.CreateControlTemplate(locationUri);
-							default: throw new NotSupportedException($"Conversion not supported. TargetType: {targetType?.Name ?? "Null"}");
-						}
+						return ResourceConverterPluginHelper.GetPlugin(streamResourceInfo.ContentType)
+							?.Convert(value, targetType, parameter, culture);
 				}
 			}
 			finally {

@@ -12,7 +12,7 @@ using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace KsWare.Presentation.Converters
 {
-	internal static class TemplateConverterHelper {
+	internal static class ResourceConverterHelper {
 		public static object ReadResource(StreamResourceInfo streamResourceInfo) {
 			switch (streamResourceInfo.ContentType) {
 				case "application/baml+xml": return ReadPage(streamResourceInfo.Stream);

@@ -5,27 +5,27 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using KsWare.Presentation.Interfaces.Plugins.TemplateConverter;
+using KsWare.Presentation.Interfaces.Plugins.ResourceConverter;
 
 namespace KsWare.Presentation.Converters {
 
-	internal static class TemplateConverterPluginHelper {
+	internal static class ResourceConverterPluginHelper {
 
-		private static readonly Lazy<Dictionary<string, Lazy<ITemplateConverterPlugin, TemplateConverterPluginExportMetadataView>>>
+		private static readonly Lazy<Dictionary<string, Lazy<IResourceConverterPlugin, ResourceConverterPluginExportMetadataView>>>
 			LazyPlugins =
-				new Lazy<Dictionary<string, Lazy<ITemplateConverterPlugin, TemplateConverterPluginExportMetadataView>>>(
+				new Lazy<Dictionary<string, Lazy<IResourceConverterPlugin, ResourceConverterPluginExportMetadataView>>>(
 					InitializePluginsFactory);
 
-		public static ITemplateConverterPlugin GetPlugin(string type) =>
+		public static IResourceConverterPlugin GetPlugin(string type) =>
 			LazyPlugins.Value.TryGetValue(type, out var lazyPlugin) ? lazyPlugin.Value : null;
 
-		private static Dictionary<string, Lazy<ITemplateConverterPlugin, TemplateConverterPluginExportMetadataView>>
+		private static Dictionary<string, Lazy<IResourceConverterPlugin, ResourceConverterPluginExportMetadataView>>
 			InitializePluginsFactory() {
 			var catalog = new AggregateCatalog();
 			var container = new CompositionContainer(catalog);
 			ComposeApplicationDirectory(container);
-			var exports = container.GetExports<ITemplateConverterPlugin, TemplateConverterPluginExportMetadataView>();
-			var dic = new Dictionary<string, Lazy<ITemplateConverterPlugin, TemplateConverterPluginExportMetadataView>>();
+			var exports = container.GetExports<IResourceConverterPlugin, ResourceConverterPluginExportMetadataView>();
+			var dic = new Dictionary<string, Lazy<IResourceConverterPlugin, ResourceConverterPluginExportMetadataView>>();
 			foreach (var export in exports) {
 				foreach (var metadata in export.Metadata.Array) {
 					if (!dic.ContainsKey(metadata.MimeType)) dic.Add(metadata.MimeType, export);
@@ -42,7 +42,7 @@ namespace KsWare.Presentation.Converters {
 			foreach (var file in dir.GetFiles("*.dll").Concat(dir.GetFiles("*.exe"))) {
 				//TODO Filter
 				if ((file.Name.StartsWith("KsWare.Presentation.Converters.") ||
-				     file.Name.Contains("TemplateConverterPlugin")) &&
+				     file.Name.Contains("ResourceConverterPlugin")) &&
 				    file.Name != "KsWare.Presentation.Converters.dll") {
 					assembly = Assembly.LoadFile(file.FullName);
 					byte[] assemblykey = assembly.GetName().GetPublicKey();

@@ -12,7 +12,7 @@ Converters for KsWare Presentation Framework
   - EntryAssemblyResourceConverterExtension](###ExecutingAssemblyResourceConverterExtension)
 - [TypeNameConverter](##TypeNameConverter)
 - [VisibilityConverter](##VisibilityConverter)
-
+  - [VisibilityBinding](###VisibilityBinding)
 ## BooleanComparingConverter
 
 ## DisplayTimeSpanConverter
@@ -126,6 +126,8 @@ Operators: ```IsNull```, ```IsNullOr0```, ```IsTrue```, ```IsFalse```, ```IsEqua
 ```xml
 <TextBlock Visibility="{Binding Converter={VisibilityConverter IsTrue, Visible, Hidden}}" />
 ```
+### VisibilityBinding
+
 
 | |Master|Develop|Kux|
 |---|---|---|---|
