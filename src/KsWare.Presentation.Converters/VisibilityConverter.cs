@@ -134,7 +134,7 @@ namespace KsWare.Presentation.Converters {
 				case Expression.NotEqualCollapsedElseVisible: Condition = IsNotEqual; True = Collapsed; Else = Visible; break;
 				case Expression.NotEqualHiddenElseVisible: Condition = IsNotEqual; True = Hidden; Else = Visible; break;
 
-				default: throw new NotImplementedException("NotImplemented {CEEC7463-252A-4D36-A1D4-54243AF2F799}");
+				default: throw new NotImplementedException($"Expression not implemented. Expression: {expression}, Converter: {GetType().FullName}");
 			}
 		}
 
@@ -191,7 +191,7 @@ namespace KsWare.Presentation.Converters {
 				case IsNull                 : return GetIsNull     (value,p.CompareValue) ? True : Else;
 //				case IsNotNull              : return ! GetIsNull   (value,p.CompareValue) ? True : Else;
 				case IsNullOr0              : return GetIsNullOr0  (value,p.CompareValue) ? True : Else;
-				default                     : throw new NotImplementedException("Condition not implemented! ErrorID:{99A1E051-01FA-4DCC-BC55-F79100A3D381}");
+				default                     : throw new NotImplementedException($"Condition not implemented! Converter: {GetType().FullName}, ID: {{99A1E051-01FA-4DCC-BC55-F79100A3D381}}, ");
 			}
 		}
 
@@ -257,9 +257,8 @@ namespace KsWare.Presentation.Converters {
 		}
 
 		public static VisibilityConverter Get(Expression expression) {
-			VisibilityConverter converter;
-			if (!Converters.TryGetValue(expression, out converter)) {
-				throw new NotImplementedException("Converter not found! ErrorID:{1D7CC6E3-2466-47F2-B2C2-BEBA23C636CA}");
+			if (!Converters.TryGetValue(expression, out var converter)) {
+				throw new NotImplementedException($"Converter not found! Expression: {expression}, Converter: {typeof(VisibilityConverter).FullName}, ErrorID:{{1D7CC6E3-2466-47F2-B2C2-BEBA23C636CA}}");
 			}
 			return converter;
 		}
