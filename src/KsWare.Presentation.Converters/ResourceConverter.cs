@@ -12,6 +12,9 @@ using static KsWare.Presentation.Converters.ResourceConverterHelper;
 
 namespace KsWare.Presentation.Converters {
 
+	// TODO support HierarchicalDataTemplate, ItemContainerTemplate
+
+
 	/// <summary>
 	/// Class ResourceConverter.
 	/// Implements the <see cref="System.Windows.Data.IValueConverter" />
