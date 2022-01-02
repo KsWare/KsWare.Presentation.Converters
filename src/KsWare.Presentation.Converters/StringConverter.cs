@@ -1,26 +1,36 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows.Data;
 
 namespace KsWare.Presentation.Converters {
 
 	/// <summary>
-	/// Class StringConverter.
-	/// Implements the <see cref="System.Windows.Data.IValueConverter" />
+	/// Class StringConverter. Converts anything to a string.
 	/// </summary>
-	/// <seealso cref="System.Windows.Data.IValueConverter" />
-	public class StringConverter:IValueConverter {
+	public class StringConverter : ValueConverterBase {
 
 		/// <summary>
-		/// The default StringConverter.
+		/// The default <see cref="StringConverter"/>. Uses string.Format("{0}")
 		/// </summary>
 		public static readonly StringConverter Default = new StringConverter();
 
-		/// <summary>
-		/// The internal converter
-		/// </summary>
-		private static readonly System.ComponentModel.StringConverter internalConverter = new System.ComponentModel.StringConverter();
+		public StringConverter() { }
 
+		public StringConverter(string stringFormat) {
+			StringFormat = stringFormat;
+		}
+
+		/// <summary>
+		/// Gets or sets the string format.
+		/// </summary>
+		/// <value>The string format to use in the converter.</value>
+		public string StringFormat { get; set; }
+
+		/// <summary>
+		/// Gets or sets the culture.
+		/// </summary>
+		/// <value>The culture to use in the converter.</value>
+		/// <remarks>If specified, this value overrides the 'culture' parameter from convert method.</remarks>
+		public CultureInfo Culture { get; set; }
 
 		/// <summary>
 		/// Converts a value.
@@ -30,22 +40,25 @@ namespace KsWare.Presentation.Converters {
 		/// <param name="parameter">The converter parameter to use.</param>
 		/// <param name="culture">The culture to use in the converter.</param>
 		/// <returns>A converted value. If the method returns <see langword="null" />, the valid null value is used.</returns>
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+		public override object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
 			//return internalConverter.ConvertFrom(value); BUG??! cannot convert from System.Int32
-			return string.Format(culture, "{0}",value);
+			
+			string format;
+			if (parameter is string s && !string.IsNullOrEmpty(s)) format = s;
+			else if (!string.IsNullOrEmpty(StringFormat)) format = StringFormat;
+			else format = "";
+			if (string.IsNullOrEmpty(format)) format = "{0}";
+			else if (!format.Contains("{0")) format = "{0:"+format+"}";
+
+			culture = Culture ?? culture;
+
+			return string.Format(culture, format, value);
 		}
 
-		/// <summary>
-		/// Converts a value.
-		/// </summary>
-		/// <param name="value">The value that is produced by the binding target.</param>
-		/// <param name="targetType">The type to convert to.</param>
-		/// <param name="parameter">The converter parameter to use.</param>
-		/// <param name="culture">The culture to use in the converter.</param>
-		/// <returns>A converted value. If the method returns <see langword="null" />, the valid null value is used.</returns>
-		/// <exception cref="System.NotImplementedException"></exception>
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-			throw new NotImplementedException();
+		public override object ProvideValue(IServiceProvider serviceProvider) {
+			return this;
 		}
+
 	}
+
 }

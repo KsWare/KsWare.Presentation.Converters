@@ -3,18 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KsWare.Presentation.Converters", "KsWare.Presentation.Converters\KsWare.Presentation.Converters.csproj", "{EDEEA54E-CDB5-4973-A9A5-1C6A827CAF05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KsWare.Presentation.Converters", "KsWare.Presentation.Converters\KsWare.Presentation.Converters.csproj", "{EDEEA54E-CDB5-4973-A9A5-1C6A827CAF05}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0E87076E-BE6B-45D6-8E4F-18F542D266CA}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
-		KsWare.Presentation.Converters\KsWare.Presentation.Converters.nuspec = KsWare.Presentation.Converters\KsWare.Presentation.Converters.nuspec
+		..\ChangeLog.md = ..\ChangeLog.md
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
-		..\ReleaseNotes.md = ..\ReleaseNotes.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KsWare.Presentation.Converters.Tests", "KsWare.Presentation.Converters.Tests\KsWare.Presentation.Converters.Tests.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KsWare.Presentation.Converters.Tests", "KsWare.Presentation.Converters.Tests\KsWare.Presentation.Converters.Tests.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KsWare.Presentation.Converters.TestApp", "KsWare.Presentation.Converters.TestApp\KsWare.Presentation.Converters.TestApp.csproj", "{C00C1148-3CE9-4F5A-9F4B-4515BD71EEDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +31,10 @@ Global
 		{8EDF4429-251A-416D-BB68-93F227191BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EDF4429-251A-416D-BB68-93F227191BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EDF4429-251A-416D-BB68-93F227191BCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C00C1148-3CE9-4F5A-9F4B-4515BD71EEDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C00C1148-3CE9-4F5A-9F4B-4515BD71EEDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C00C1148-3CE9-4F5A-9F4B-4515BD71EEDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C00C1148-3CE9-4F5A-9F4B-4515BD71EEDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
