@@ -23,7 +23,7 @@ namespace KsWare.Presentation.Converters {
 		private static readonly IFormatProvider enus=CultureInfo.CreateSpecificCulture("en-US");
 		private static readonly ThicknessConverter converter=new ThicknessConverter();
 
-		public SingleValueThicknessConverter(string parameter) {
+		public SingleValueThicknessConverter(string parameter = null) {
 			Parameter=parameter;
 		}
 

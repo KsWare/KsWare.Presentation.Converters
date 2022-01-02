@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp5.0-windows</TargetFramework>
+    <TargetFramework>netcoreapp6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Properties\key.snk</AssemblyOriginatorKeyFile>
