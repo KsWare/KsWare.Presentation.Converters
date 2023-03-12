@@ -1,6 +1,11 @@
 # Release Notes
 KsWare.Presentation.Converters
 
+### 2023-03-12
+- TargetFrameworks removed: net452, net5.0-windows
+- TargetFrameworks added: net462
+- update nuget packages
+
 ### 2022-01-02
 - TargetFrameworks removed: net45
 - TargetFrameworks added: net6.0-windows, net452
